@@ -1,0 +1,1 @@
+This directory stores email files for development when SMTP is not configured.

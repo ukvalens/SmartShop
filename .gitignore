@@ -1,0 +1,39 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Database config (if contains sensitive info)
+config/database.php
+
+# Uploads directory
+uploads/
+!uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# Cache
+cache/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vendor dependencies (if using Composer)
+vendor/
+
+# Node modules (if using npm)
+node_modules/
+
+# Build files
+dist/
+build/
