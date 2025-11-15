@@ -13,6 +13,7 @@ if (!$auth->isLoggedIn()) {
 }
 
 $product_id = $_GET['id'] ?? 0;
+$lang = $_GET['lang'] ?? $_SESSION['language'] ?? 'en';
 $db = new Database();
 $conn = $db->getConnection();
 

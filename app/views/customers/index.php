@@ -58,6 +58,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pay_credit'])) {
     }
 }
 
+// Handle customer deletion (Admin, Owner, and Business Owner only)
+if (isset($_GET['delete_customer']) && in_array($user['role'], ['Admin', 'Owner', 'Business Owner'])) {
+    $customer_id = $_GET['delete_customer'];
+    
+    // Delete related records first
+    $conn->query("DELETE FROM payments WHERE customer_id = $customer_id");
+    $conn->query("UPDATE sales SET customer_id = NULL WHERE customer_id = $customer_id");
+    
+    // Delete customer
+    if ($conn->query("DELETE FROM customers WHERE customer_id = $customer_id")) {
+        $message = 'Customer deleted successfully!';
+    } else {
+        $message = 'Failed to delete customer.';
+    }
+}
+
 // Pagination setup
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
@@ -189,9 +205,17 @@ $credit_customers = $conn->query("
                                 <td><?php echo number_format($customer['total_purchases']); ?> RWF</td>
                                 <td><?php echo $customer['total_orders']; ?></td>
                                 <td>
-                                    <?php if ($customer['credit_balance'] > 0): ?>
-                                        <button onclick="openPaymentModal(<?php echo $customer['customer_id']; ?>, '<?php echo $customer['full_name']; ?>', <?php echo $customer['credit_balance']; ?>)" class="btn-small btn-payment">Pay Credit</button>
-                                    <?php endif; ?>
+                                    <div class="action-buttons">
+                                        <button onclick="viewCustomer(<?php echo $customer['customer_id']; ?>)" class="btn-small btn-info">View</button>
+                                        
+                                        <?php if ($user['role'] !== 'Cashier'): ?>
+                                            <button onclick="editCustomer(<?php echo $customer['customer_id']; ?>)" class="btn-small btn-warning">Edit</button>
+                                            <?php if ($customer['credit_balance'] > 0): ?>
+                                                <button onclick="openPaymentModal(<?php echo $customer['customer_id']; ?>, '<?php echo $customer['full_name']; ?>', <?php echo $customer['credit_balance']; ?>)" class="btn-small btn-payment">Pay</button>
+                                            <?php endif; ?>
+                                            <button onclick="deleteCustomer(<?php echo $customer['customer_id']; ?>)" class="btn-small btn-danger">Delete</button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -367,6 +391,41 @@ $credit_customers = $conn->query("
         background: var(--success);
     }
     
+    .action-buttons {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-small {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        color: white;
+        min-width: 28px;
+        text-align: center;
+    }
+    
+    .btn-info {
+        background: #17a2b8;
+    }
+    
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+    }
+    
+    .btn-small:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+    
     .modal {
         display: none;
         position: fixed;
@@ -486,6 +545,23 @@ $credit_customers = $conn->query("
                 }
             });
         });
+        
+        // Customer action functions
+        function viewCustomer(customerId) {
+            window.location.href = `get_customer_items.php?customer_id=${customerId}&lang=<?php echo $lang; ?>`;
+        }
+        
+        function editCustomer(customerId) {
+            // Redirect to edit page or open edit modal
+            alert('Edit customer functionality - Customer ID: ' + customerId);
+            // You can implement edit modal or redirect to edit page
+        }
+        
+        function deleteCustomer(customerId) {
+            if (confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
+                window.location.href = `?delete_customer=${customerId}&lang=<?php echo $lang; ?>`;
+            }
+        }
     </script>
 </body>
 </html>

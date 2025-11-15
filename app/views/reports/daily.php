@@ -20,15 +20,22 @@ $conn = $db->getConnection();
 
 $selected_date = $_GET['date'] ?? date('Y-m-d');
 
-// Daily sales summary
-$sales_summary = $conn->query("
+// Daily sales summary using prepared statement with correct profit calculation
+$stmt = $conn->prepare("
     SELECT 
-        COUNT(*) as total_sales,
-        COALESCE(SUM(total_amount), 0) as total_revenue,
-        COALESCE(SUM(total_amount * 0.2), 0) as total_profit
+        COUNT(DISTINCT s.sale_id) as total_sales,
+        COALESCE(SUM(s.total_amount), 0) as total_revenue,
+        COALESCE(SUM(sd.quantity_sold * (sd.selling_price - p.cost_price)), 0) as total_profit
     FROM sales s 
-    WHERE DATE(s.sale_date) = '$selected_date'
-")->fetch_assoc();
+    LEFT JOIN sale_details sd ON s.sale_id = sd.sale_id
+    LEFT JOIN products p ON sd.product_id = p.product_id
+    WHERE DATE(s.sale_date) = ?
+");
+$stmt->bind_param("s", $selected_date);
+$stmt->execute();
+$sales_summary = $stmt->get_result()->fetch_assoc();
+
+
 
 // Top selling products (simplified query)
 $top_products = $conn->query("
@@ -147,6 +154,8 @@ $hourly_sales = $conn->query("
                     <p class="big-number profit"><?php echo number_format($sales_summary['total_profit'] ?? 0); ?> RWF</p>
                 </div>
             </div>
+            
+
 
             <div class="reports-grid">
                 <div class="report-section">

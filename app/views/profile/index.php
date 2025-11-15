@@ -111,6 +111,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
                             <label>Role:</label>
                             <span><?php echo $user['role']; ?></span>
                         </div>
+                        <?php if ($user['role'] === 'Owner' || $user['role'] === 'Business Owner'): ?>
+                        <div class="detail-item">
+                            <label>Access Level:</label>
+                            <span>Business Management - Full Access</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Permissions:</label>
+                            <span>Inventory, POS, Customers, Reports, Suppliers</span>
+                        </div>
+                        <?php elseif ($user['role'] === 'Admin'): ?>
+                        <div class="detail-item">
+                            <label>Access Level:</label>
+                            <span>System Administration - Full Control</span>
+                        </div>
+                        <?php elseif ($user['role'] === 'Cashier'): ?>
+                        <div class="detail-item">
+                            <label>Access Level:</label>
+                            <span>Sales Operations - Limited Access</span>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

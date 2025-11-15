@@ -20,7 +20,7 @@ $conn = $db->getConnection();
 // Get login attempts (simulated data)
 $login_logs = [
     ['user' => 'admin@smartshop.rw', 'ip' => '192.168.1.100', 'status' => 'Success', 'time' => date('Y-m-d H:i:s', strtotime('-1 hour'))],
-    ['user' => 'manager@smartshop.rw', 'ip' => '192.168.1.101', 'status' => 'Success', 'time' => date('Y-m-d H:i:s', strtotime('-2 hours'))],
+    ['user' => 'owner@smartshop.rw', 'ip' => '192.168.1.101', 'status' => 'Success', 'time' => date('Y-m-d H:i:s', strtotime('-2 hours'))],
     ['user' => 'unknown@test.com', 'ip' => '192.168.1.200', 'status' => 'Failed', 'time' => date('Y-m-d H:i:s', strtotime('-3 hours'))],
 ];
 

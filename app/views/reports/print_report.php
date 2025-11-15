@@ -28,12 +28,17 @@ if ($report_type === 'customer' && $customer_id) {
     
     $sales_data = $conn->query("
         SELECT s.sale_id, s.sale_date, s.total_amount, s.payment_method,
-               'General Sale' as product_name, 1 as quantity, s.total_amount as unit_price, 
-               (s.total_amount * 0.7) as cost_price,
+               GROUP_CONCAT(CONCAT(p.product_name, ' (', sd.quantity_sold, ')') SEPARATOR ', ') as product_name,
+               SUM(sd.quantity_sold) as quantity,
+               s.total_amount as unit_price,
+               SUM(sd.quantity_sold * p.cost_price) as cost_price,
                s.total_amount as item_total,
-               (s.total_amount * 0.3) as item_profit
+               (s.total_amount - SUM(sd.quantity_sold * p.cost_price)) as item_profit
         FROM sales s
+        LEFT JOIN sale_details sd ON s.sale_id = sd.sale_id
+        LEFT JOIN products p ON sd.product_id = p.product_id
         WHERE s.customer_id = $customer_id AND DATE(s.sale_date) = '$selected_date'
+        GROUP BY s.sale_id
         ORDER BY s.sale_date DESC
         LIMIT 20
     ");
@@ -42,13 +47,18 @@ if ($report_type === 'customer' && $customer_id) {
     $sales_data = $conn->query("
         SELECT s.sale_id, s.sale_date, s.total_amount, s.payment_method,
                COALESCE(c.full_name, 'Walk-in Customer') as customer_name,
-               'General Sale' as product_name, 1 as quantity, s.total_amount as unit_price,
-               (s.total_amount * 0.7) as cost_price,
+               GROUP_CONCAT(CONCAT(p.product_name, ' (', sd.quantity_sold, ')') SEPARATOR ', ') as product_name,
+               SUM(sd.quantity_sold) as quantity,
+               s.total_amount as unit_price,
+               SUM(sd.quantity_sold * p.cost_price) as cost_price,
                s.total_amount as item_total,
-               (s.total_amount * 0.3) as item_profit
+               (s.total_amount - SUM(sd.quantity_sold * p.cost_price)) as item_profit
         FROM sales s
         LEFT JOIN customers c ON s.customer_id = c.customer_id
+        LEFT JOIN sale_details sd ON s.sale_id = sd.sale_id
+        LEFT JOIN products p ON sd.product_id = p.product_id
         WHERE DATE(s.sale_date) = '$selected_date'
+        GROUP BY s.sale_id
         ORDER BY s.sale_date DESC
         LIMIT 20
     ");
@@ -153,44 +163,10 @@ $total_profit = 0;
             <?php endwhile; ?>
             <?php if (!$has_data): ?>
                 <tr>
-                    <td colspan="9" style="text-align: center; padding: 2rem; color: #666;">
+                    <td colspan="<?php echo ($report_type !== 'customer') ? '9' : '8'; ?>" style="text-align: center; padding: 2rem; color: #666;">
                         No sales data found for <?php echo date('F d, Y', strtotime($selected_date)); ?>
-                        <br><small>Showing sample data for demonstration</small>
                     </td>
                 </tr>
-                <?php 
-                // Show sample data for this specific customer if no real data exists
-                if ($report_type === 'customer') {
-                    $sample_data = [
-                        ['time' => '10:15', 'product' => 'Customer Purchase', 'qty' => 1, 'unit_price' => 12000, 'cost_price' => 8400, 'revenue' => 12000, 'profit' => 3600, 'payment' => 'Cash'],
-                        ['time' => '15:30', 'product' => 'Customer Purchase', 'qty' => 1, 'unit_price' => 18000, 'cost_price' => 12600, 'revenue' => 18000, 'profit' => 5400, 'payment' => 'Mobile Money']
-                    ];
-                } else {
-                    $sample_data = [
-                        ['time' => '09:30', 'customer' => 'Walk-in Customer', 'product' => 'Sample Sale', 'qty' => 1, 'unit_price' => 15000, 'cost_price' => 10500, 'revenue' => 15000, 'profit' => 4500, 'payment' => 'Cash'],
-                        ['time' => '11:15', 'customer' => 'Walk-in Customer', 'product' => 'Sample Sale', 'qty' => 1, 'unit_price' => 25000, 'cost_price' => 17500, 'revenue' => 25000, 'profit' => 7500, 'payment' => 'Mobile Money'],
-                        ['time' => '14:20', 'customer' => 'Walk-in Customer', 'product' => 'Sample Sale', 'qty' => 1, 'unit_price' => 8000, 'cost_price' => 5600, 'revenue' => 8000, 'profit' => 2400, 'payment' => 'Cash']
-                    ];
-                }
-                foreach ($sample_data as $sample): 
-                    $total_revenue += $sample['revenue'];
-                    $total_cost += $sample['cost_price'];
-                    $total_profit += $sample['profit'];
-                ?>
-                <tr style="opacity: 0.7; font-style: italic;">
-                    <td><?php echo $sample['time']; ?></td>
-                    <?php if ($report_type !== 'customer'): ?>
-                        <td><?php echo $sample['customer']; ?></td>
-                    <?php endif; ?>
-                    <td><?php echo $sample['product']; ?></td>
-                    <td class="number"><?php echo $sample['qty']; ?></td>
-                    <td class="number"><?php echo number_format($sample['unit_price']); ?> RWF</td>
-                    <td class="number"><?php echo number_format($sample['cost_price']); ?> RWF</td>
-                    <td class="number"><?php echo number_format($sample['revenue']); ?> RWF</td>
-                    <td class="number profit"><?php echo number_format($sample['profit']); ?> RWF</td>
-                    <td><?php echo $sample['payment']; ?></td>
-                </tr>
-                <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
     </table>

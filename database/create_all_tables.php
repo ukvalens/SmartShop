@@ -28,7 +28,7 @@ $tables = [
         email VARCHAR(100) UNIQUE NOT NULL,
         phone_number VARCHAR(20),
         password VARCHAR(255) NOT NULL,
-        role ENUM('Admin', 'Manager', 'Cashier', 'Customer') NOT NULL,
+        role ENUM('Admin', 'Owner', 'Cashier', 'Customer') NOT NULL,
         status ENUM('active', 'inactive') DEFAULT 'active',
         language_preference VARCHAR(5) DEFAULT 'en',
         reset_token VARCHAR(255) NULL,
@@ -240,7 +240,7 @@ $defaultData = [
     
     "INSERT INTO users (full_name, email, phone_number, password, role) VALUES
     ('System Admin', 'admin@smartshop.com', '+250788000000', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 'Admin'),
-    ('Shop Manager', 'manager@smartshop.com', '+250788111111', '" . password_hash('manager123', PASSWORD_DEFAULT) . "', 'Manager'),
+    ('Shop Owner', 'owner@smartshop.com', '+250788111111', '" . password_hash('owner123', PASSWORD_DEFAULT) . "', 'Owner'),
     ('Cashier One', 'cashier@smartshop.com', '+250788222222', '" . password_hash('cashier123', PASSWORD_DEFAULT) . "', 'Cashier'),
     ('Customer User', 'customer@smartshop.com', '+250788999999', '" . password_hash('customer123', PASSWORD_DEFAULT) . "', 'Customer')",
     

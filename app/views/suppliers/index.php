@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../helpers/Navigation.php';
 require_once __DIR__ . '/../../../config/database.php';
 
 $auth = new AuthController();
-if (!$auth->isLoggedIn() || !in_array($auth->getCurrentUser()['role'], ['Owner', 'Manager'])) {
+if (!$auth->isLoggedIn() || !in_array($auth->getCurrentUser()['role'], ['Admin', 'Owner'])) {
     header('Location: ../auth/login.php');
     exit;
 }

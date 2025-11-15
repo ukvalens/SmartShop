@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_schedule'])) {
 }
 
 // Get staff members
-$staff = $conn->query("SELECT user_id, full_name, role FROM users WHERE role IN ('Manager', 'Cashier') ORDER BY full_name");
+$staff = $conn->query("SELECT user_id, full_name, role FROM users WHERE role IN ('Owner', 'Cashier') ORDER BY full_name");
 
 // Get current week schedules
 $schedules = $conn->query("

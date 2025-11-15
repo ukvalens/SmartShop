@@ -38,8 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
 // Handle user deletion
 if (isset($_GET['delete']) && $_GET['delete'] != $user['user_id']) {
     $delete_id = $_GET['delete'];
-    $conn->query("DELETE FROM users WHERE user_id = $delete_id");
-    $message = 'User deleted successfully!';
+    
+    // Delete related records first to avoid foreign key constraint errors
+    $conn->query("DELETE FROM returns WHERE sale_id IN (SELECT sale_id FROM sales WHERE user_id = $delete_id)");
+    $conn->query("DELETE FROM sales WHERE user_id = $delete_id");
+    $conn->query("DELETE FROM staff_schedules WHERE user_id = $delete_id");
+    
+    // Now delete the user
+    if ($conn->query("DELETE FROM users WHERE user_id = $delete_id")) {
+        $message = 'User deleted successfully!';
+    } else {
+        $message = 'Failed to delete user.';
+    }
 }
 
 // Get all users
@@ -143,11 +153,10 @@ $users = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
                 <div class="form-group">
                     <label class="form-label">Role</label>
                     <select name="role" class="form-input" required>
-                        <option value="System Admin">System Admin</option>
+                        <option value="Admin">Admin</option>
                         <option value="Owner">Owner</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Customer"><?php echo Language::get('customer', $lang); ?></option>
                         <option value="Cashier">Cashier</option>
+                        <option value="Customer"><?php echo Language::get('customer', $lang); ?></option>
                     </select>
                 </div>
                 <button type="submit" name="create_user" class="btn">Create User</button>

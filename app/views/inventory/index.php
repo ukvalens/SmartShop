@@ -20,6 +20,18 @@ $conn = $db->getConnection();
 
 $message = '';
 
+// Handle success messages from redirects
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'product_added':
+            $message = 'Product added successfully!';
+            break;
+        case 'stock_adjusted':
+            $message = 'Stock adjusted successfully!';
+            break;
+    }
+}
+
 // Handle new product addition
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
     $product_name = $_POST['product_name'];
@@ -28,13 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
     $cost_price = $_POST['cost_price'];
     $selling_price = $_POST['selling_price'];
     $stock_quantity = $_POST['stock_quantity'];
-    $reorder_level = $_POST['reorder_level'];
     
-    $stmt = $conn->prepare("INSERT INTO products (product_name, category_id, barcode, cost_price, selling_price, stock_quantity, reorder_level) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sisddii", $product_name, $category_id, $barcode, $cost_price, $selling_price, $stock_quantity, $reorder_level);
+    $stmt = $conn->prepare("INSERT INTO products (product_name, category_id, barcode, cost_price, selling_price, stock_quantity) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sisddi", $product_name, $category_id, $barcode, $cost_price, $selling_price, $stock_quantity);
     
     if ($stmt->execute()) {
-        $message = 'Product added successfully!';
+        header('Location: index.php?lang=' . $lang . '&success=product_added');
+        exit;
     } else {
         $message = 'Failed to add product.';
     }
@@ -57,19 +69,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_stock'])) {
         $stmt->bind_param("ii", $quantity_changed, $product_id);
         $stmt->execute();
         
-        $message = 'Stock adjusted successfully!';
+        header('Location: index.php?lang=' . $lang . '&success=stock_adjusted');
+        exit;
     } else {
         $message = 'Failed to adjust stock.';
     }
 }
 
-// Get inventory with low stock alerts
+// Pagination setup
+$items_per_page = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $items_per_page;
+
+// Count total products
+$total_result = $conn->query("SELECT COUNT(*) as total FROM products");
+$total_products = $total_result->fetch_assoc()['total'];
+$total_pages = ceil($total_products / $items_per_page);
+
+// Get inventory with low stock alerts and pagination
 $inventory = $conn->query("
     SELECT p.*, c.category_name,
            CASE WHEN p.stock_quantity <= p.reorder_level THEN 1 ELSE 0 END as low_stock
     FROM products p 
     LEFT JOIN categories c ON p.category_id = c.category_id 
     ORDER BY low_stock DESC, p.product_name
+    LIMIT $items_per_page OFFSET $offset
 ");
 
 // Get categories for filtering
@@ -168,7 +192,6 @@ $recent_adjustments = $conn->query("
                             <th><?php echo Language::get('product', $lang); ?></th>
                             <th>Category</th>
                             <th>Stock</th>
-                            <th>Reorder Level</th>
                             <th>Cost Price</th>
                             <th>Selling Price</th>
                             <th><?php echo Language::get('status', $lang); ?></th>
@@ -190,7 +213,7 @@ $recent_adjustments = $conn->query("
                                         <?php echo $product['stock_quantity']; ?>
                                     </span>
                                 </td>
-                                <td><?php echo $product['reorder_level']; ?></td>
+
                                 <td><?php echo number_format($product['cost_price']); ?> RWF</td>
                                 <td><?php echo number_format($product['selling_price']); ?> RWF</td>
                                 <td>
@@ -204,14 +227,29 @@ $recent_adjustments = $conn->query("
                                     <button onclick="openAdjustModal(<?php echo $product['product_id']; ?>, '<?php echo addslashes($product['product_name']); ?>')" class="btn-small btn-adjust">Adjust</button>
                                     <button onclick="openEditModal(<?php echo $product['product_id']; ?>)" class="btn-small btn-edit"><?php echo Language::get('edit', $lang); ?></button>
                                     <button onclick="viewHistory(<?php echo $product['product_id']; ?>)" class="btn-small btn-history">History</button>
-                                    <?php if ($product['low_stock']): ?>
-                                        <button onclick="reorderProduct(<?php echo $product['product_id']; ?>)" class="btn-small btn-reorder">Reorder</button>
-                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                
+                <!-- Pagination -->
+                <?php if ($total_pages > 1): ?>
+                    <div class="pagination">
+                        <?php if ($page > 1): ?>
+                            <a href="?page=<?php echo $page - 1; ?>&lang=<?php echo $lang; ?>" class="page-btn">« Prev</a>
+                        <?php endif; ?>
+                        
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <a href="?page=<?php echo $i; ?>&lang=<?php echo $lang; ?>" 
+                               class="page-btn <?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                        <?php endfor; ?>
+                        
+                        <?php if ($page < $total_pages): ?>
+                            <a href="?page=<?php echo $page + 1; ?>&lang=<?php echo $lang; ?>" class="page-btn">Next »</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="recent-adjustments">
@@ -329,11 +367,6 @@ $recent_adjustments = $conn->query("
                     <input type="number" name="stock_quantity" class="form-input" min="0" required>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Reorder Level</label>
-                    <input type="number" name="reorder_level" class="form-input" min="0" required>
-                </div>
-                
                 <button type="submit" name="add_product" class="btn">Add Product</button>
             </form>
         </div>
@@ -409,9 +442,10 @@ $recent_adjustments = $conn->query("
     .inventory-table td,
     .adjustments-table th,
     .adjustments-table td {
-        padding: 1rem;
+        padding: 0.5rem 0.75rem;
         text-align: left;
         border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
     }
     
     .inventory-table th,
@@ -441,11 +475,42 @@ $recent_adjustments = $conn->query("
     .btn-small {
         color: white;
         border: none;
-        padding: 0.3rem 0.6rem;
+        padding: 0.25rem 0.5rem;
         border-radius: 3px;
         cursor: pointer;
-        font-size: 0.75rem;
-        margin: 0 2px;
+        font-size: 0.7rem;
+        margin: 0 1px;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .page-btn {
+        padding: 0.5rem 0.75rem;
+        text-decoration: none;
+        color: var(--text);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .page-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .page-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
     }
     
     .btn-adjust { background: var(--accent); }

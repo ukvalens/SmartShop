@@ -18,22 +18,22 @@ class Navigation {
                 break;
             case 'Admin':
                 $links = array_merge($links, [
-                    ['url' => '../users/index.php', 'label' => Language::get('user_management', $lang)],
-                    ['url' => '../settings/system.php', 'label' => Language::get('system_settings', $lang)],
-                    ['url' => '../reports/system.php', 'label' => Language::get('system_reports', $lang)],
-                    ['url' => '../backup/index.php', 'label' => Language::get('data_backup', $lang)],
-                    ['url' => '../security/index.php', 'label' => Language::get('security', $lang)]
+                    ['url' => '../pos/index.php', 'label' => 'POS'],
+                    ['url' => '../inventory/index.php', 'label' => 'Inventory'],
+                    ['url' => '../customers/index.php', 'label' => 'Customers'],
+                    ['url' => '../customers/credit.php', 'label' => 'Credit Management'],
+                    ['url' => '../reports/daily.php', 'label' => 'Reports'],
+                    ['url' => '../users/index.php', 'label' => Language::get('user_management', $lang)]
                 ]);
                 break;
             case 'Owner':
-            case 'Manager':
                 $links = array_merge($links, [
-                    ['url' => '../suppliers/index.php', 'label' => Language::get('supplier_management', $lang)],
-                    ['url' => '../inventory/index.php', 'label' => Language::get('inventory_management', $lang)],
-                    ['url' => '../pos/index.php', 'label' => Language::get('point_of_sale', $lang)],
-                    ['url' => '../customers/index.php', 'label' => Language::get('customer_service', $lang)],
-                    ['url' => '../customers/credit.php', 'label' => Language::get('credit_management', $lang)],
-                    ['url' => '../reports/daily.php', 'label' => Language::get('daily_reports', $lang)]
+                    ['url' => '../pos/index.php', 'label' => 'POS'],
+                    ['url' => '../inventory/index.php', 'label' => 'Inventory'],
+                    ['url' => '../customers/index.php', 'label' => 'Customers'],
+                    ['url' => '../customers/credit.php', 'label' => 'Credit Management'],
+                    ['url' => '../reports/daily.php', 'label' => 'Reports'],
+                    ['url' => '../suppliers/index.php', 'label' => 'Suppliers']
                 ]);
                 break;
             case 'Cashier':

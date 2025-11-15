@@ -64,6 +64,14 @@ $fullName = $user['full_name'];
             color: #666;
             font-size: 0.9rem;
         }
+        .navigation-wrapper {
+            display: block;
+            width: 100%;
+        }
+        .top-nav {
+            display: block !important;
+            visibility: visible !important;
+        }
     </style>
 </head>
 <body>
@@ -126,9 +134,9 @@ $fullName = $user['full_name'];
                         </a>
                     </div>
                 </div>
-            <?php elseif ($role === 'Owner' || $role === 'Manager'): ?>
-                <div class="manager-panel">
-                    <h2><?php echo $role === 'Owner' ? 'Business Owner' : 'Shop Manager'; ?></h2>
+            <?php elseif ($role === 'Admin' || $role === 'Owner'): ?>
+                <div class="owner-panel">
+                    <h2>Business Owner</h2>
                     <p class="role-desc">Oversees entire business operations, including inventory, supplier orders, customer credit, and reporting</p>
                     
                     <div class="workflow-section">
@@ -138,11 +146,11 @@ $fullName = $user['full_name'];
                                 <h3>🚚 Supplier Management</h3>
                                 <p>Create purchase orders for sugar, rice, soap and other products</p>
                             </a>
-                            <a href="../inventory/index.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../inventory/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>📦 <?php echo Language::get('inventory_management', $lang); ?></h3>
                                 <p>Verify delivered goods and update stock in the system</p>
                             </a>
-                            <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>💰 <?php echo Language::get('point_of_sale', $lang); ?></h3>
                                 <p>Supervise sales transactions and customer service</p>
                             </a>
@@ -152,15 +160,15 @@ $fullName = $user['full_name'];
                     <div class="workflow-section">
                         <h3>📊 Business Intelligence & Decision Making</h3>
                         <div class="menu-grid">
-                            <a href="../reports/daily.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../reports/daily.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>📈 End-of-Day Reports</h3>
                                 <p>Track sales, profits, top-selling products, and frequent customers</p>
                             </a>
-                            <a href="../reports/analytics.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../reports/analytics.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>🎯 Business Analytics</h3>
                                 <p>Decide what to restock and identify most profitable products</p>
                             </a>
-                            <a href="../customers/credit.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../customers/credit.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>💳 Credit Management</h3>
                                 <p>Track customer debts and monitor payment collections</p>
                             </a>
@@ -170,11 +178,11 @@ $fullName = $user['full_name'];
                     <div class="workflow-section">
                         <h3>👥 <?php echo Language::get('customer_management', $lang); ?></h3>
                         <div class="menu-grid">
-                            <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>👥 Customer Service</h3>
                                 <p>Handle customer relationships and loyalty programs</p>
                             </a>
-                            <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="menu-item manager-item">
+                            <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>👤 My Profile</h3>
                                 <p>Update profile and business information</p>
                             </a>

@@ -108,10 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label class="form-label"><i class="fas fa-user-tag"></i> <?php echo Language::get('role', $lang); ?></label>
                                 <select name="role" class="form-input" required>
                                     <option value="">Select your role</option>
-                                    <option value="System Admin">System Admin</option>
-                                    <option value="Owner">Business Owner</option>
-                                    <option value="Manager"><?php echo Language::get('manager', $lang); ?></option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Owner">Owner</option>
                                     <option value="Cashier"><?php echo Language::get('cashier', $lang); ?></option>
+                                    <option value="Customer"><?php echo Language::get('customer', $lang); ?></option>
                                 </select>
                             </div>
                             <div class="form-group">

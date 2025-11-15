@@ -106,7 +106,40 @@ if (isset($_GET['send_reminders'])) {
 // Get customers for dropdown
 $customers = $conn->query("SELECT customer_id, full_name, email FROM customers ORDER BY full_name");
 
-// Get credit records with due date alerts
+// Get customers with credit balance
+$credit_customers = $conn->query("
+    SELECT c.*, 
+           COUNT(s.sale_id) as credit_sales_count,
+           MAX(s.sale_date) as last_credit_sale
+    FROM customers c 
+    LEFT JOIN sales s ON c.customer_id = s.customer_id AND s.payment_method = 'Credit'
+    WHERE c.credit_balance > 0 
+    GROUP BY c.customer_id
+    ORDER BY c.credit_balance DESC
+");
+
+// Get recent credit sales
+$recent_credit_sales = $conn->query("
+    SELECT s.*, c.full_name, c.phone_number, u.full_name as cashier_name
+    FROM sales s
+    JOIN customers c ON s.customer_id = c.customer_id
+    JOIN users u ON s.user_id = u.user_id
+    WHERE s.payment_method = 'Credit'
+    ORDER BY s.sale_date DESC
+    LIMIT 20
+");
+
+// Pagination for credit records
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10;
+$offset = ($page - 1) * $limit;
+
+// Get total count
+$total_result = $conn->query("SELECT COUNT(*) as total FROM customer_credits cc WHERE cc.status = 'pending'");
+$total_records = $total_result->fetch_assoc()['total'];
+$total_pages = ceil($total_records / $limit);
+
+// Get credit records with pagination
 $credits = $conn->query("
     SELECT cc.*, c.full_name, c.email, c.phone_number,
            DATEDIFF(cc.due_date, CURDATE()) as days_until_due
@@ -114,6 +147,7 @@ $credits = $conn->query("
     JOIN customers c ON cc.customer_id = c.customer_id
     WHERE cc.status = 'pending'
     ORDER BY cc.due_date ASC
+    LIMIT $limit OFFSET $offset
 ");
 ?>
 <!DOCTYPE html>
@@ -132,8 +166,13 @@ $credits = $conn->query("
             left: auto !important;
             z-index: 1000 !important;
         }
+        .top-nav {
+            display: block !important;
+            visibility: visible !important;
+        }
         .top-nav .nav-links {
             gap: 0.3rem !important;
+            display: flex !important;
         }
         .top-nav .nav-links a {
             padding: 0.4rem 0.6rem !important;
@@ -151,7 +190,7 @@ $credits = $conn->query("
     </div>
 
     <div class="dashboard-container">
-        <?php Navigation::renderNav($user['role'], $_GET['lang'] ?? 'en'); ?>
+        <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
             <h1>💳 Credit Management</h1>
@@ -180,6 +219,64 @@ $credits = $conn->query("
             <div class="credit-actions">
                 <button onclick="openAddModal()" class="btn"><?php echo Language::get('add_credit', $lang); ?></button>
                 <a href="?send_reminders=1" class="btn btn-warning" onclick="return confirm('Send reminder emails to customers with due payments?')"><?php echo Language::get('send_reminders', $lang); ?></a>
+            </div>
+
+            <div class="credit-sections">
+                <div class="section">
+                    <h2>Customers with Outstanding Credit</h2>
+                    <div class="outstanding-credit-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Phone</th>
+                                    <th>Credit Balance</th>
+                                    <th>Credit Sales</th>
+                                    <th>Last Credit Sale</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($customer = $credit_customers->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><strong><?php echo $customer['full_name']; ?></strong></td>
+                                        <td><?php echo $customer['phone_number']; ?></td>
+                                        <td class="credit-amount"><?php echo number_format($customer['credit_balance']); ?> RWF</td>
+                                        <td><span class="badge"><?php echo $customer['credit_sales_count']; ?></span></td>
+                                        <td><?php echo $customer['last_credit_sale'] ? date('M d, Y', strtotime($customer['last_credit_sale'])) : '<span class="text-muted">N/A</span>'; ?></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Recent Credit Sales</h2>
+                    <div class="sales-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sale ID</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Cashier</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($sale = $recent_credit_sales->fetch_assoc()): ?>
+                                    <tr>
+                                        <td>#<?php echo $sale['sale_id']; ?></td>
+                                        <td><?php echo $sale['full_name']; ?> (<?php echo $sale['phone_number']; ?>)</td>
+                                        <td><?php echo number_format($sale['total_amount']); ?> RWF</td>
+                                        <td><?php echo $sale['cashier_name']; ?></td>
+                                        <td><?php echo date('M d, Y H:i', strtotime($sale['sale_date'])); ?></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div class="credits-table">
@@ -232,6 +329,23 @@ $credits = $conn->query("
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                
+                <!-- Pagination -->
+                <?php if ($total_pages > 1): ?>
+                <div class="pagination">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?php echo $page-1; ?>&lang=<?php echo $lang; ?>" class="btn-small">Previous</a>
+                    <?php endif; ?>
+                    
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&lang=<?php echo $lang; ?>" class="btn-small <?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                    <?php endfor; ?>
+                    
+                    <?php if ($page < $total_pages): ?>
+                        <a href="?page=<?php echo $page+1; ?>&lang=<?php echo $lang; ?>" class="btn-small">Next</a>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
         
@@ -307,9 +421,10 @@ $credits = $conn->query("
     
     .credits-table th,
     .credits-table td {
-        padding: 1rem;
+        padding: 0.5rem;
         text-align: left;
         border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
     }
     
     .due-soon {
@@ -373,6 +488,81 @@ $credits = $conn->query("
     
     .btn-success {
         background: #28a745;
+    }
+    
+    .credit-sections {
+        display: grid;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .credit-amount {
+        color: var(--error);
+        font-weight: bold;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .pagination .btn-small.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .outstanding-credit-table {
+        overflow-x: auto;
+    }
+    
+    .outstanding-credit-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .outstanding-credit-table th {
+        background: #f8f9fa;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .outstanding-credit-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle;
+    }
+    
+    .outstanding-credit-table tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .badge {
+        background: #007bff;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .text-muted {
+        color: #6c757d;
+        font-style: italic;
     }
     </style>
 

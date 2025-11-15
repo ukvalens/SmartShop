@@ -25,10 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_sale'])) {
     $customer_id = $_POST['customer_id'] ?: null;
     $payment_method = $_POST['payment_method'];
     $cart_items = json_decode($_POST['cart_items'], true);
-    $total_amount = $_POST['total_amount'];
+    $total_amount = floatval($_POST['total_amount']);
     
-    // Insert sale
-    $stmt = $conn->prepare("INSERT INTO sales (customer_id, user_id, total_amount, payment_method) VALUES (?, ?, ?, ?)");
+    // Insert sale with explicit sale_date
+    $stmt = $conn->prepare("INSERT INTO sales (customer_id, user_id, total_amount, payment_method, sale_date) VALUES (?, ?, ?, ?, NOW())");
     $stmt->bind_param("iids", $customer_id, $user['user_id'], $total_amount, $payment_method);
     
     if ($stmt->execute()) {
@@ -46,6 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_sale'])) {
             // Update product stock
             $stmt = $conn->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE product_id = ?");
             $stmt->bind_param("ii", $item['quantity'], $item['product_id']);
+            $stmt->execute();
+        }
+        
+        // If payment method is Credit, update customer credit balance
+        if ($payment_method === 'Credit' && $customer_id) {
+            $stmt = $conn->prepare("UPDATE customers SET credit_balance = credit_balance + ? WHERE customer_id = ?");
+            $stmt->bind_param("di", $total_amount, $customer_id);
             $stmt->execute();
         }
         
@@ -170,6 +177,7 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                                 <select name="payment_method" class="form-input" required>
                                     <option value="Cash"><?php echo Language::get('cash', $lang); ?></option>
                                     <option value="Mobile Money"><?php echo Language::get('mobile_money', $lang); ?></option>
+                                    <option value="Credit">Credit</option>
                                 </select>
                             </div>
 
@@ -341,7 +349,7 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                 cart.push({
                     product_id: productId,
                     name: productName,
-                    price: price,
+                    price: parseFloat(price),
                     quantity: 1,
                     stock: stock
                 });
@@ -378,19 +386,20 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                 cartItems.innerHTML = '<p class="empty-cart">Cart is empty</p>';
                 cartTotal.textContent = '0';
                 completeBtn.disabled = true;
+                document.getElementById('total-amount-input').value = 0;
             } else {
                 let html = '';
                 let total = 0;
                 
                 cart.forEach(item => {
-                    const subtotal = item.quantity * item.price;
+                    const subtotal = parseFloat(item.quantity) * parseFloat(item.price);
                     total += subtotal;
                     
                     html += `
                         <div class="cart-item">
                             <div class="cart-item-info">
                                 <strong>${item.name}</strong><br>
-                                ${item.price} RWF x ${item.quantity} = ${subtotal} RWF
+                                ${item.price} RWF x ${item.quantity} = ${subtotal.toFixed(2)} RWF
                             </div>
                             <div class="cart-item-controls">
                                 <button class="qty-btn" onclick="updateQuantity(${item.product_id}, -1)">-</button>
@@ -405,10 +414,11 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                 cartItems.innerHTML = html;
                 cartTotal.textContent = total.toLocaleString();
                 completeBtn.disabled = false;
+                document.getElementById('total-amount-input').value = total.toFixed(2);
             }
             
             document.getElementById('cart-items-input').value = JSON.stringify(cart);
-            document.getElementById('total-amount-input').value = total;
+            console.log('Cart total:', total); // Debug
         }
         
         function clearCart() {
