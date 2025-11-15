@@ -478,7 +478,12 @@ class Language {
     ];
     
     public static function get($key, $lang = 'en') {
-        return self::$translations[$lang][$key] ?? $key;
+        $translation = self::$translations[$lang][$key] ?? null;
+        if ($translation) {
+            return $translation;
+        }
+        // If no translation found, convert underscores to spaces and capitalize
+        return ucwords(str_replace('_', ' ', $key));
     }
     
     public static function getCurrentLanguage() {

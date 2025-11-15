@@ -64,6 +64,23 @@ if ($report_type === 'customer' && $customer_id) {
     ");
 }
 
+// Get credit sales and collections for the date
+$credit_stats = $conn->query("
+    SELECT 
+        COALESCE(SUM(CASE WHEN payment_method = 'Credit' THEN total_amount END), 0) as credit_sales,
+        COUNT(CASE WHEN payment_method = 'Credit' THEN 1 END) as credit_transactions
+    FROM sales 
+    WHERE DATE(sale_date) = '$selected_date'
+")->fetch_assoc();
+
+$credit_collections = $conn->query("
+    SELECT 
+        COALESCE(SUM(amount), 0) as collections_amount,
+        COUNT(*) as collections_count
+    FROM customer_credits 
+    WHERE status = 'paid' AND DATE(created_at) = '$selected_date'
+")->fetch_assoc();
+
 $total_revenue = 0;
 $total_cost = 0;
 $total_profit = 0;
@@ -190,6 +207,52 @@ $total_profit = 0;
         <div class="summary-row">
             <span class="summary-label">Profit Margin:</span>
             <span><?php echo $total_revenue > 0 ? number_format(($total_profit / $total_revenue) * 100, 2) : 0; ?>%</span>
+        </div>
+    </div>
+    
+    <div class="summary-section">
+        <h3>CREDIT & COLLECTIONS SUMMARY</h3>
+        <div class="summary-row">
+            <span class="summary-label">Credit Sales:</span>
+            <span style="color: #ff6b35; font-weight: bold;"><?php echo number_format($credit_stats['credit_sales'] ?? 0); ?> RWF</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Credit Transactions:</span>
+            <span><?php echo $credit_stats['credit_transactions'] ?? 0; ?></span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Collections Received:</span>
+            <span style="color: #28a745; font-weight: bold;"><?php echo number_format($credit_collections['collections_amount'] ?? 0); ?> RWF</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Payments Received:</span>
+            <span><?php echo $credit_collections['collections_count'] ?? 0; ?></span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Net Credit Impact:</span>
+            <span class="<?php echo (($credit_stats['credit_sales'] ?? 0) - ($credit_collections['collections_amount'] ?? 0)) > 0 ? 'loss' : 'profit'; ?>">
+                <?php echo number_format(($credit_stats['credit_sales'] ?? 0) - ($credit_collections['collections_amount'] ?? 0)); ?> RWF
+            </span>
+        </div>
+    </div>
+    
+    <div class="summary-section">
+        <h3>TOTAL MONEY SUMMARY</h3>
+        <?php 
+        $cash_revenue = $total_revenue - ($credit_stats['credit_sales'] ?? 0);
+        $total_cash_in = $cash_revenue + ($credit_collections['collections_amount'] ?? 0);
+        ?>
+        <div class="summary-row">
+            <span class="summary-label">Cash Sales:</span>
+            <span><?php echo number_format($cash_revenue); ?> RWF</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Credit Collections:</span>
+            <span><?php echo number_format($credit_collections['collections_amount'] ?? 0); ?> RWF</span>
+        </div>
+        <div class="summary-row" style="border-top: 2px solid #333; margin-top: 10px; padding-top: 10px;">
+            <span class="summary-label" style="font-size: 18px;">TOTAL CASH IN HAND:</span>
+            <span style="font-size: 18px; font-weight: bold; color: #1a237e;"><?php echo number_format($total_cash_in); ?> RWF</span>
         </div>
     </div>
 

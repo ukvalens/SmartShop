@@ -57,6 +57,24 @@ $payment_methods = $conn->query("
     GROUP BY payment_method
 ");
 
+// Credit sales and collections
+$credit_stats = $conn->query("
+    SELECT 
+        COALESCE(SUM(CASE WHEN payment_method = 'Credit' THEN total_amount END), 0) as credit_sales,
+        COUNT(CASE WHEN payment_method = 'Credit' THEN 1 END) as credit_transactions
+    FROM sales 
+    WHERE DATE(sale_date) = '$selected_date'
+")->fetch_assoc();
+
+// Credit collections (payments received on credit)
+$credit_collections = $conn->query("
+    SELECT 
+        COALESCE(SUM(amount), 0) as collections_amount,
+        COUNT(*) as collections_count
+    FROM customer_credits 
+    WHERE status = 'paid' AND DATE(created_at) = '$selected_date'
+")->fetch_assoc();
+
 // Hourly sales
 $hourly_sales = $conn->query("
     SELECT HOUR(sale_date) as hour, COUNT(*) as sales_count, SUM(total_amount) as revenue
@@ -153,6 +171,16 @@ $hourly_sales = $conn->query("
                     <h3><?php echo Language::get('total_profit', $lang); ?></h3>
                     <p class="big-number profit"><?php echo number_format($sales_summary['total_profit'] ?? 0); ?> RWF</p>
                 </div>
+                <div class="summary-card credit-card">
+                    <h3>💳 Credit Sales</h3>
+                    <p class="big-number credit"><?php echo number_format($credit_stats['credit_sales'] ?? 0); ?> RWF</p>
+                    <small><?php echo $credit_stats['credit_transactions'] ?? 0; ?> transactions</small>
+                </div>
+                <div class="summary-card collection-card">
+                    <h3>💰 Collections</h3>
+                    <p class="big-number collection"><?php echo number_format($credit_collections['collections_amount'] ?? 0); ?> RWF</p>
+                    <small><?php echo $credit_collections['collections_count'] ?? 0; ?> payments received</small>
+                </div>
             </div>
             
 
@@ -223,6 +251,26 @@ $hourly_sales = $conn->query("
                         </tbody>
                     </table>
                 </div>
+                
+                <div class="report-section">
+                    <h2>💳 Credit Summary</h2>
+                    <div class="credit-summary">
+                        <div class="credit-item">
+                            <span class="label">Credit Sales Today:</span>
+                            <span class="value"><?php echo number_format($credit_stats['credit_sales'] ?? 0); ?> RWF</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="label">Collections Today:</span>
+                            <span class="value collection"><?php echo number_format($credit_collections['collections_amount'] ?? 0); ?> RWF</span>
+                        </div>
+                        <div class="credit-item">
+                            <span class="label">Net Credit Impact:</span>
+                            <span class="value <?php echo ($credit_stats['credit_sales'] - $credit_collections['collections_amount']) > 0 ? 'negative' : 'positive'; ?>">
+                                <?php echo number_format(($credit_stats['credit_sales'] ?? 0) - ($credit_collections['collections_amount'] ?? 0)); ?> RWF
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -272,6 +320,54 @@ $hourly_sales = $conn->query("
     
     .profit {
         color: var(--success);
+    }
+    
+    .credit {
+        color: #ff6b35;
+    }
+    
+    .collection {
+        color: #28a745;
+    }
+    
+    .credit-card {
+        border-left: 4px solid #ff6b35;
+    }
+    
+    .collection-card {
+        border-left: 4px solid #28a745;
+    }
+    
+    .credit-summary {
+        margin-top: 1rem;
+    }
+    
+    .credit-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .credit-item:last-child {
+        border-bottom: none;
+        font-weight: bold;
+    }
+    
+    .credit-item .label {
+        color: #666;
+    }
+    
+    .credit-item .value {
+        font-weight: 600;
+    }
+    
+    .credit-item .value.positive {
+        color: #28a745;
+    }
+    
+    .credit-item .value.negative {
+        color: #dc3545;
     }
     
     .reports-grid {
