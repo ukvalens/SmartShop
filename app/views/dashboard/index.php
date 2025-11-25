@@ -103,7 +103,7 @@ $fullName = $user['full_name'];
         </header>
 
         <div class="content">
-            <?php if ($role === 'System Admin' || $role === 'Admin'): ?>
+            <?php if ($role === 'System Admin'): ?>
                 <div class="admin-panel">
                     <h2>System Administrator</h2>
                     <p class="role-desc">Complete system control and user management</p>
@@ -134,7 +134,46 @@ $fullName = $user['full_name'];
                         </a>
                     </div>
                 </div>
-            <?php elseif ($role === 'Admin' || $role === 'Owner'): ?>
+            <?php elseif ($role === 'Admin'): ?>
+                <div class="admin-panel">
+                    <h2>Business Administrator</h2>
+                    <p class="role-desc">Business operations with administrative privileges</p>
+                    <div class="menu-grid">
+                        <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>💰 <?php echo Language::get('point_of_sale', $lang); ?></h3>
+                            <p>Process sales transactions and manage POS</p>
+                        </a>
+                        <a href="../inventory/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>📦 <?php echo Language::get('inventory_management', $lang); ?></h3>
+                            <p>Manage products, stock levels, and inventory</p>
+                        </a>
+                        <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>👥 <?php echo Language::get('customer_management', $lang); ?></h3>
+                            <p>Manage customer accounts and relationships</p>
+                        </a>
+                        <a href="../customers/credit.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>💳 Credit Management</h3>
+                            <p>Handle customer credit and payment tracking</p>
+                        </a>
+                        <a href="../reports/daily.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>📊 Daily Reports</h3>
+                            <p>View sales reports and business analytics</p>
+                        </a>
+                        <a href="../users/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>👥 <?php echo Language::get('user_management', $lang); ?></h3>
+                            <p>Manage system users and permissions</p>
+                        </a>
+                        <a href="../settings/system.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>⚙️ <?php echo Language::get('system_settings', $lang); ?></h3>
+                            <p>Configure system settings and preferences</p>
+                        </a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
+                            <h3>👤 My Profile</h3>
+                            <p>Update profile and account settings</p>
+                        </a>
+                    </div>
+                </div>
+            <?php elseif ($role === 'Owner'): ?>
                 <div class="owner-panel">
                     <h2>Business Owner</h2>
                     <p class="role-desc">Oversees entire business operations, including inventory, supplier orders, customer credit, and reporting</p>

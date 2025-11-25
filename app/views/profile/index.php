@@ -8,30 +8,41 @@ require_once __DIR__ . '/../../helpers/Navigation.php';
 
 $auth = new AuthController();
 if (!$auth->isLoggedIn()) {
-    header('Location: ../auth/login.php?lang=' . $lang);
+    header('Location: ../auth/login.php?lang=' . ($_GET['lang'] ?? 'en'));
     exit;
 }
 
 $user = $auth->getCurrentUser();
 $lang = $_GET['lang'] ?? $_SESSION['language'] ?? 'en';
+$_SESSION['language'] = $lang;
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
     $uploadDir = __DIR__ . '/../../../uploads/profiles/';
+    
+    // Create directory if it doesn't exist
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+    
     $fileName = $user['user_id'] . '.jpg';
     $uploadFile = $uploadDir . $fileName;
     
     // Validate image
-    $imageInfo = getimagesize($_FILES['profile_image']['tmp_name']);
-    if ($imageInfo && in_array($imageInfo['mime'], ['image/jpeg', 'image/png', 'image/gif'])) {
-        if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadFile)) {
-            chmod($uploadFile, 0644);
-            $message = 'Profile image updated successfully!';
+    if (isset($_FILES['profile_image']['tmp_name']) && $_FILES['profile_image']['tmp_name']) {
+        $imageInfo = getimagesize($_FILES['profile_image']['tmp_name']);
+        if ($imageInfo && in_array($imageInfo['mime'], ['image/jpeg', 'image/png', 'image/gif'])) {
+            if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadFile)) {
+                chmod($uploadFile, 0644);
+                $message = 'Profile image updated successfully!';
+            } else {
+                $message = 'Failed to upload image.';
+            }
         } else {
-            $message = 'Failed to upload image.';
+            $message = 'Please upload a valid image file (JPG, PNG, GIF).';
         }
     } else {
-        $message = 'Please upload a valid image file (JPG, PNG, GIF).';
+        $message = 'No image file selected.';
     }
 }
 ?>
@@ -40,7 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - SmartSHOP</title>
+    <title><?php echo Language::get('profile', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
         .language-selector {
@@ -68,23 +80,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
         </select>
     </div>
 
-    <div class="dashboard">
+    <div class="dashboard-container">
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>User Profile</h1>
+            <h1>👤 <?php echo Language::get('profile', $lang); ?></h1>
             <div class="user-info">
-                <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                <div class="user-profile">
+                    <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
+                    <div class="user-details">
+                        <span class="user-name"><?php echo $user['full_name']; ?></span>
+                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                    </div>
+                    <div class="user-menu">
+                        <a href="../dashboard/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('dashboard', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                    </div>
+                </div>
             </div>
         </header>
 
         <div class="content">
             <?php if ($message): ?>
-                <div class="alert alert-success"><?php echo $message; ?></div>
+                <div class="alert <?php echo strpos($message, 'success') ? 'alert-success' : 'alert-error'; ?>">
+                    <?php echo $message; ?>
+                </div>
             <?php endif; ?>
             
             <div class="profile-section">
-                <h2>Profile Information</h2>
+                <h2>👤 <?php echo Language::get('profile_information', $lang); ?></h2>
                 
                 <div class="profile-form">
                     <div class="profile-image-section">
@@ -94,47 +118,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
                         
                         <form method="POST" enctype="multipart/form-data" class="image-upload-form">
                             <input type="file" name="profile_image" accept="image/*" class="form-input" required>
-                            <button type="submit" class="btn">Update Profile Image</button>
+                            <button type="submit" class="btn">📷 <?php echo Language::get('update_image', $lang); ?></button>
                         </form>
                     </div>
                     
                     <div class="profile-details">
                         <div class="detail-item">
-                            <label>Full Name:</label>
-                            <span><?php echo $user['full_name']; ?></span>
+                            <label><?php echo Language::get('full_name', $lang); ?>:</label>
+                            <span><?php echo htmlspecialchars($user['full_name']); ?></span>
                         </div>
                         <div class="detail-item">
-                            <label>Email:</label>
-                            <span><?php echo $user['email']; ?></span>
+                            <label><?php echo Language::get('email', $lang); ?>:</label>
+                            <span><?php echo htmlspecialchars($user['email']); ?></span>
                         </div>
                         <div class="detail-item">
-                            <label>Role:</label>
-                            <span><?php echo $user['role']; ?></span>
+                            <label><?php echo Language::get('role', $lang); ?>:</label>
+                            <span class="role-badge"><?php echo $user['role']; ?></span>
                         </div>
-                        <?php if ($user['role'] === 'Owner' || $user['role'] === 'Business Owner'): ?>
+                        <?php if ($user['role'] === 'Owner'): ?>
                         <div class="detail-item">
-                            <label>Access Level:</label>
+                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
                             <span>Business Management - Full Access</span>
                         </div>
                         <div class="detail-item">
-                            <label>Permissions:</label>
+                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
                             <span>Inventory, POS, Customers, Reports, Suppliers</span>
                         </div>
                         <?php elseif ($user['role'] === 'Admin'): ?>
                         <div class="detail-item">
-                            <label>Access Level:</label>
+                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <span>Business Administration - Extended Access</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <span>POS, Inventory, Customers, Reports, User Management</span>
+                        </div>
+                        <?php elseif ($user['role'] === 'System Admin'): ?>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
                             <span>System Administration - Full Control</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <span>All System Functions, User Management, Security, Backup</span>
                         </div>
                         <?php elseif ($user['role'] === 'Cashier'): ?>
                         <div class="detail-item">
-                            <label>Access Level:</label>
+                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
                             <span>Sales Operations - Limited Access</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <span>POS, Customer Lookup, Stock Check, Returns</span>
+                        </div>
+                        <?php elseif ($user['role'] === 'Customer'): ?>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <span>Personal Account - View Only</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <span>Order History, Loyalty Points, Credit Balance</span>
                         </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
+        
+        </div>
+        
+        <?php include __DIR__ . '/../../includes/footer.php'; ?>
     </div>
 
     <style>
@@ -200,12 +254,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
         color: var(--primary);
     }
     
+    .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    
     .alert-success {
         background: #d4edda;
         color: #155724;
-        padding: 1rem;
-        border-radius: 5px;
-        margin-bottom: 1rem;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .role-badge {
+        background: var(--accent);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
     }
     </style>
 
@@ -214,7 +287,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
             window.location.href = '?lang=' + lang;
         }
     </script>
-    
-    <?php include __DIR__ . '/../../includes/footer.php'; ?>
 </body>
 </html>
