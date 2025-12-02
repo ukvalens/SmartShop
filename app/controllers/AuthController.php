@@ -3,16 +3,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../helpers/Language.php';
 
 class AuthController {
     private $conn;
     
     public function __construct() {
-        $this->conn = new mysqli('localhost', 'root', '', 'smartshop');
-        if ($this->conn->connect_error) {
-            die('Connection failed: ' . $this->conn->connect_error);
-        }
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
     
     public function register($fullName, $email, $phoneNumber, $password, $role) {
@@ -47,6 +46,10 @@ class AuthController {
                 return ['success' => false, 'message' => 'Account is inactive'];
             }
             
+            if ($user['role'] === 'Pending') {
+                return ['success' => false, 'message' => 'Account pending admin approval. Please contact administrator.'];
+            }
+            
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['full_name'] = $user['full_name'];
@@ -63,7 +66,7 @@ class AuthController {
     
     public function logout() {
         session_destroy();
-        header('Location: ../login.php');
+        header('Location: ../auth/login.php');
         exit;
     }
     

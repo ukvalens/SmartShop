@@ -93,7 +93,7 @@ $stats = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('security', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('security', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -126,17 +126,17 @@ $stats = [
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>🔒 <?php echo Language::get('security', $lang); ?></h1>
+            <h1>🔒 <?php echo Language::getText('security', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($user['role']), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -152,19 +152,19 @@ $stats = [
             <!-- Security Overview -->
             <div class="security-overview">
                 <div class="stat-card">
-                    <h3>👥 <?php echo Language::get('total_users', $lang); ?></h3>
+                    <h3>👥 <?php echo Language::getText('total_users', $lang); ?></h3>
                     <p class="stat-number"><?php echo $stats['total_users']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>🟢 <?php echo Language::get('active_today', $lang); ?></h3>
+                    <h3>🟢 <?php echo Language::getText('active_today', $lang); ?></h3>
                     <p class="stat-number"><?php echo $stats['active_today']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>⚠️ <?php echo Language::get('failed_logins', $lang); ?></h3>
+                    <h3>⚠️ <?php echo Language::getText('failed_logins', $lang); ?></h3>
                     <p class="stat-number"><?php echo $stats['failed_logins']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>📊 <?php echo Language::get('transactions_today', $lang); ?></h3>
+                    <h3>📊 <?php echo Language::getText('transactions_today', $lang); ?></h3>
                     <p class="stat-number"><?php echo $stats['total_sales_today']; ?></p>
                 </div>
             </div>
@@ -173,10 +173,10 @@ $stats = [
                 <!-- Login Activity -->
                 <div class="security-section">
                     <div class="section-header">
-                        <h2>📝 <?php echo Language::get('login_activity', $lang); ?></h2>
+                        <h2>📝 <?php echo Language::getText('login_activity', $lang); ?></h2>
                         <form method="POST" style="display: inline;">
-                            <button type="submit" name="clear_logs" class="btn-small btn-warning" onclick="return confirm('<?php echo Language::get('confirm_clear_logs', $lang); ?>')">
-                                🗑️ <?php echo Language::get('clear_logs', $lang); ?>
+                            <button type="submit" name="clear_logs" class="btn-small btn-warning" onclick="return confirm('<?php echo Language::getText('confirm_clear_logs', $lang); ?>')">
+                                🗑️ <?php echo Language::getText('clear_logs', $lang); ?>
                             </button>
                         </form>
                     </div>
@@ -184,11 +184,11 @@ $stats = [
                         <table>
                             <thead>
                                 <tr>
-                                    <th><?php echo Language::get('user', $lang); ?></th>
-                                    <th><?php echo Language::get('role', $lang); ?></th>
-                                    <th><?php echo Language::get('ip_address', $lang); ?></th>
-                                    <th><?php echo Language::get('last_activity', $lang); ?></th>
-                                    <th><?php echo Language::get('status', $lang); ?></th>
+                                    <th><?php echo Language::getText('user', $lang); ?></th>
+                                    <th><?php echo Language::getText('role', $lang); ?></th>
+                                    <th><?php echo Language::getText('ip_address', $lang); ?></th>
+                                    <th><?php echo Language::getText('last_activity', $lang); ?></th>
+                                    <th><?php echo Language::getText('status', $lang); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -211,15 +211,15 @@ $stats = [
 
                 <!-- Active Users -->
                 <div class="security-section">
-                    <h2>🟢 <?php echo Language::get('active_users_today', $lang); ?></h2>
+                    <h2>🟢 <?php echo Language::getText('active_users_today', $lang); ?></h2>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th><?php echo Language::get('user', $lang); ?></th>
-                                    <th><?php echo Language::get('role', $lang); ?></th>
-                                    <th><?php echo Language::get('transactions', $lang); ?></th>
-                                    <th><?php echo Language::get('last_transaction', $lang); ?></th>
+                                    <th><?php echo Language::getText('user', $lang); ?></th>
+                                    <th><?php echo Language::getText('role', $lang); ?></th>
+                                    <th><?php echo Language::getText('transactions', $lang); ?></th>
+                                    <th><?php echo Language::getText('last_transaction', $lang); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -241,30 +241,30 @@ $stats = [
 
                 <!-- Security Settings -->
                 <div class="security-section">
-                    <h2>⚙️ <?php echo Language::get('security_settings', $lang); ?></h2>
+                    <h2>⚙️ <?php echo Language::getText('security_settings', $lang); ?></h2>
                     <form method="POST" class="security-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('password_min_length', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('password_min_length', $lang); ?></label>
                                 <input type="number" name="password_min_length" value="<?php echo $security_settings['password_min_length']; ?>" class="form-input" min="6" max="20" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('session_timeout', $lang); ?> (<?php echo Language::get('minutes', $lang); ?>)</label>
+                                <label class="form-label"><?php echo Language::getText('session_timeout', $lang); ?> (<?php echo Language::getText('minutes', $lang); ?>)</label>
                                 <input type="number" name="session_timeout" value="<?php echo $security_settings['session_timeout']; ?>" class="form-input" min="5" max="120" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('max_login_attempts', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('max_login_attempts', $lang); ?></label>
                                 <input type="number" name="max_login_attempts" value="<?php echo $security_settings['max_login_attempts']; ?>" class="form-input" min="3" max="10" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">
                                     <input type="checkbox" name="enable_2fa" <?php echo $security_settings['enable_2fa'] ? 'checked' : ''; ?>>
-                                    <?php echo Language::get('enable_2fa', $lang); ?>
+                                    <?php echo Language::getText('enable_2fa', $lang); ?>
                                 </label>
                             </div>
                         </div>
                         <button type="submit" name="update_settings" class="btn">
-                            🔄 <?php echo Language::get('update_settings', $lang); ?>
+                            🔄 <?php echo Language::getText('update_settings', $lang); ?>
                         </button>
                     </form>
                 </div>

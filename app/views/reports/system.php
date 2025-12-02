@@ -84,7 +84,7 @@ $system_health = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('system_reports', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('system_reports', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -117,17 +117,17 @@ $system_health = [
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>📊 <?php echo Language::get('system_reports', $lang); ?></h1>
+            <h1>📊 <?php echo Language::getText('system_reports', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($user['role']), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -137,27 +137,27 @@ $system_health = [
             <!-- System Overview -->
             <div class="system-overview">
                 <div class="stat-card">
-                    <h3>👥 <?php echo Language::get('total_users', $lang); ?></h3>
+                    <h3>👥 <?php echo Language::getText('total_users', $lang); ?></h3>
                     <p class="stat-number"><?php echo $system_stats['total_users']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>📦 <?php echo Language::get('total_products', $lang); ?></h3>
+                    <h3>📦 <?php echo Language::getText('total_products', $lang); ?></h3>
                     <p class="stat-number"><?php echo $system_stats['total_products']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>🛒 <?php echo Language::get('total_sales', $lang); ?></h3>
+                    <h3>🛒 <?php echo Language::getText('total_sales', $lang); ?></h3>
                     <p class="stat-number"><?php echo $system_stats['total_sales']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>👤 <?php echo Language::get('total_customers', $lang); ?></h3>
+                    <h3>👤 <?php echo Language::getText('total_customers', $lang); ?></h3>
                     <p class="stat-number"><?php echo $system_stats['total_customers']; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>💰 <?php echo Language::get('total_revenue', $lang); ?></h3>
+                    <h3>💰 <?php echo Language::getText('total_revenue', $lang); ?></h3>
                     <p class="stat-number"><?php echo number_format($system_stats['total_revenue']); ?> RWF</p>
                 </div>
                 <div class="stat-card">
-                    <h3>📈 <?php echo Language::get('average_sale', $lang); ?></h3>
+                    <h3>📈 <?php echo Language::getText('average_sale', $lang); ?></h3>
                     <p class="stat-number"><?php echo number_format($system_stats['avg_sale']); ?> RWF</p>
                 </div>
             </div>
@@ -165,15 +165,15 @@ $system_health = [
             <div class="reports-sections">
                 <!-- User Analytics -->
                 <div class="report-section">
-                    <h2>👥 <?php echo Language::get('user_analytics', $lang); ?></h2>
+                    <h2>👥 <?php echo Language::getText('user_analytics', $lang); ?></h2>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th><?php echo Language::get('role', $lang); ?></th>
-                                    <th><?php echo Language::get('total_users', $lang); ?></th>
-                                    <th><?php echo Language::get('recent_additions', $lang); ?></th>
-                                    <th><?php echo Language::get('percentage', $lang); ?></th>
+                                    <th><?php echo Language::getText('role', $lang); ?></th>
+                                    <th><?php echo Language::getText('total_users', $lang); ?></th>
+                                    <th><?php echo Language::getText('recent_additions', $lang); ?></th>
+                                    <th><?php echo Language::getText('percentage', $lang); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -192,15 +192,15 @@ $system_health = [
 
                 <!-- Monthly Performance -->
                 <div class="report-section">
-                    <h2>📈 <?php echo Language::get('monthly_performance', $lang); ?></h2>
+                    <h2>📈 <?php echo Language::getText('monthly_performance', $lang); ?></h2>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th><?php echo Language::get('month', $lang); ?></th>
-                                    <th><?php echo Language::get('sales_count', $lang); ?></th>
-                                    <th><?php echo Language::get('revenue', $lang); ?></th>
-                                    <th><?php echo Language::get('avg_per_sale', $lang); ?></th>
+                                    <th><?php echo Language::getText('month', $lang); ?></th>
+                                    <th><?php echo Language::getText('sales_count', $lang); ?></th>
+                                    <th><?php echo Language::getText('revenue', $lang); ?></th>
+                                    <th><?php echo Language::getText('avg_per_sale', $lang); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -219,15 +219,15 @@ $system_health = [
 
                 <!-- Top Performers -->
                 <div class="report-section">
-                    <h2>🏆 <?php echo Language::get('top_performers', $lang); ?></h2>
+                    <h2>🏆 <?php echo Language::getText('top_performers', $lang); ?></h2>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th><?php echo Language::get('user', $lang); ?></th>
-                                    <th><?php echo Language::get('role', $lang); ?></th>
-                                    <th><?php echo Language::get('total_sales', $lang); ?></th>
-                                    <th><?php echo Language::get('total_revenue', $lang); ?></th>
+                                    <th><?php echo Language::getText('user', $lang); ?></th>
+                                    <th><?php echo Language::getText('role', $lang); ?></th>
+                                    <th><?php echo Language::getText('total_sales', $lang); ?></th>
+                                    <th><?php echo Language::getText('total_revenue', $lang); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -246,22 +246,22 @@ $system_health = [
 
                 <!-- System Health -->
                 <div class="report-section">
-                    <h2>🔧 <?php echo Language::get('system_health', $lang); ?></h2>
+                    <h2>🔧 <?php echo Language::getText('system_health', $lang); ?></h2>
                     <div class="health-metrics">
                         <div class="metric-item">
-                            <span class="metric-label"><?php echo Language::get('database_size', $lang); ?>:</span>
+                            <span class="metric-label"><?php echo Language::getText('database_size', $lang); ?>:</span>
                             <span class="metric-value"><?php echo $system_health['database_size']; ?></span>
                         </div>
                         <div class="metric-item">
-                            <span class="metric-label"><?php echo Language::get('active_sessions', $lang); ?>:</span>
+                            <span class="metric-label"><?php echo Language::getText('active_sessions', $lang); ?>:</span>
                             <span class="metric-value"><?php echo $system_health['active_sessions']; ?></span>
                         </div>
                         <div class="metric-item">
-                            <span class="metric-label"><?php echo Language::get('server_uptime', $lang); ?>:</span>
+                            <span class="metric-label"><?php echo Language::getText('server_uptime', $lang); ?>:</span>
                             <span class="metric-value success"><?php echo $system_health['server_uptime']; ?></span>
                         </div>
                         <div class="metric-item">
-                            <span class="metric-label"><?php echo Language::get('last_backup', $lang); ?>:</span>
+                            <span class="metric-label"><?php echo Language::getText('last_backup', $lang); ?>:</span>
                             <span class="metric-value"><?php echo date('M d, Y H:i', strtotime($system_health['last_backup'])); ?></span>
                         </div>
                     </div>

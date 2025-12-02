@@ -37,38 +37,41 @@ $credit_history = $conn->query("
 ");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo $lang; ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Credit Balance - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
-    <style>
-        .language-selector {
-            position: fixed !important;
-            top: 20px !important;
-            right: 20px !important;
-            left: auto !important;
-            z-index: 1000 !important;
-        }
-        .top-nav .nav-links {
-            gap: 0.3rem !important;
-        }
-        .top-nav .nav-links a {
-            padding: 0.4rem 0.6rem !important;
-            font-size: 0.85rem !important;
-            white-space: nowrap !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="language-selector">
+        <select onchange="changeLanguage(this.value)">
+            <option value="en" <?php echo $lang === 'en' ? 'selected' : ''; ?>>🇺🇸 English</option>
+            <option value="rw" <?php echo $lang === 'rw' ? 'selected' : ''; ?>>🇷🇼 Kinyarwanda</option>
+        </select>
+    </div>
+
     <div class="dashboard-container">
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
             <h1>💳 Credit Balance</h1>
             <div class="user-info">
-                <span>Welcome, <?php echo $user['full_name']; ?></span>
+                <div class="user-profile">
+                    <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
+                    <div class="user-details">
+                        <span class="user-name"><?php echo $user['full_name']; ?></span>
+                        <span class="user-role"><?php echo $user['role']; ?></span>
+                    </div>
+                    <div class="user-menu">
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -86,7 +89,7 @@ $credit_history = $conn->query("
                 </div>
                 
                 <div class="payment-info">
-                    <h3><?php echo Language::get('payment_methods', $lang); ?></h3>
+                    <h3><?php echo Language::getText('payment_methods', $lang); ?></h3>
                     <ul>
                         <li>💰 Cash payment at store</li>
                         <li>📱 Mobile Money transfer</li>
@@ -108,11 +111,11 @@ $credit_history = $conn->query("
                 <table>
                     <thead>
                         <tr>
-                            <th><?php echo Language::get('date', $lang); ?></th>
+                            <th><?php echo Language::getText('date', $lang); ?></th>
                             <th>Type</th>
-                            <th><?php echo Language::get('description', $lang); ?></th>
-                            <th><?php echo Language::get('amount', $lang); ?></th>
-                            <th><?php echo Language::get('status', $lang); ?></th>
+                            <th><?php echo Language::getText('description', $lang); ?></th>
+                            <th><?php echo Language::getText('amount', $lang); ?></th>
+                            <th><?php echo Language::getText('status', $lang); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,15 +134,30 @@ $credit_history = $conn->query("
                 </table>
             </div>
         </div>
+        
+        <?php include __DIR__ . '/../../includes/footer.php'; ?>
     </div>
+
+    <script>
+        function changeLanguage(lang) {
+            window.location.href = '?lang=' + lang;
+        }
+    </script>
 
     <style>
         .language-selector {
             position: fixed !important;
             top: 20px !important;
             right: 20px !important;
-            left: auto !important;
             z-index: 1000 !important;
+        }
+        
+        .language-selector select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            font-size: 0.9rem;
         }
     .credit-summary {
         display: grid;
@@ -156,11 +174,11 @@ $credit_history = $conn->query("
     }
     
     .balance-card.has-balance {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     }
     
     .balance-card.no-balance {
-        background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
     
     .balance-display {
@@ -208,6 +226,36 @@ $credit_history = $conn->query("
     .credit {
         color: red;
         font-weight: bold;
+    }
+    
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+    
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .user-name {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .user-role {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: capitalize;
     }
     </style>
 </body>

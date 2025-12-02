@@ -34,14 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('login', $lang); ?> - SmartShop POS</title>
+    <title><?php echo Language::getText('login', $lang); ?> - SmartShop POS</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="auth-container">
+    <div class="auth-container responsive-auth">
         <div class="language-selector">
             <select onchange="changeLanguage(this.value)">
                 <option value="en" <?php echo $lang === 'en' ? 'selected' : ''; ?>>🇺🇸 English</option>
@@ -90,18 +90,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <form method="POST" class="auth-form">
                         <div class="form-group">
-                            <label class="form-label"><i class="fas fa-envelope"></i> <?php echo Language::get('email', $lang); ?></label>
+                            <label class="form-label"><i class="fas fa-envelope"></i> <?php echo Language::getText('email', $lang); ?></label>
                             <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label"><i class="fas fa-lock"></i> <?php echo Language::get('password', $lang); ?></label>
+                            <label class="form-label"><i class="fas fa-lock"></i> <?php echo Language::getText('password', $lang); ?></label>
                             <input type="password" name="password" class="form-input" placeholder="Enter your password" required>
                         </div>
 
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-sign-in-alt"></i>
-                            <?php echo Language::get('login', $lang); ?>
+                            <?php echo Language::getText('login', $lang); ?>
                         </button>
                     </form>
 
@@ -119,5 +119,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             window.location.href = '?lang=' + lang;
         }
     </script>
+    
+    <style>
+        /* Responsive Design */
+        @media (max-width: 1366px) {
+            .auth-layout {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                padding: 0.5rem;
+                min-height: calc(100vh - 80px);
+            }
+            
+            .auth-hero {
+                padding: 1rem;
+            }
+            
+            .hero-content h2 {
+                font-size: 1.5rem;
+            }
+            
+            .hero-content p {
+                font-size: 0.9rem;
+            }
+            
+            .features {
+                gap: 0.5rem;
+            }
+            
+            .feature {
+                font-size: 0.8rem;
+            }
+            
+            .auth-card {
+                padding: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .auth-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-hero {
+                order: 2;
+                padding: 0.5rem;
+            }
+            
+            .auth-form-section {
+                order: 1;
+            }
+            
+            .auth-card {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+            
+            .language-selector {
+                position: static;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
 </body>
 </html>

@@ -92,7 +92,7 @@ $recent_returns = $conn->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('returns_exchanges', $lang); ?> - SmartSHOP</title>
+    <title><?php echo Language::getText('returns_exchanges', $lang); ?> - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -125,7 +125,7 @@ $recent_returns = $conn->query("
         <?php Navigation::renderNav($user['role'], $_GET['lang'] ?? 'en'); ?>
         
         <header class="header">
-            <h1>🔄 <?php echo Language::get('returns_exchanges', $lang); ?></h1>
+            <h1>🔄 <?php echo Language::getText('returns_exchanges', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
@@ -134,8 +134,8 @@ $recent_returns = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -150,14 +150,14 @@ $recent_returns = $conn->query("
 
             <div class="returns-grid">
                 <div class="sales-section">
-                    <h2><?php echo Language::get('recent_sales', $lang); ?></h2>
+                    <h2><?php echo Language::getText('recent_sales', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
                                 <th>Sale ID</th>
-                                <th><?php echo Language::get('date', $lang); ?></th>
-                                <th><?php echo Language::get('customer', $lang); ?></th>
-                                <th><?php echo Language::get('amount', $lang); ?></th>
+                                <th><?php echo Language::getText('date', $lang); ?></th>
+                                <th><?php echo Language::getText('customer', $lang); ?></th>
+                                <th><?php echo Language::getText('amount', $lang); ?></th>
                                 <th>Payment</th>
                                 <th>Action</th>
                             </tr>
@@ -198,17 +198,17 @@ $recent_returns = $conn->query("
                 </div>
 
                 <div class="returns-section">
-                    <h2><?php echo Language::get('recent_returns', $lang); ?></h2>
+                    <h2><?php echo Language::getText('recent_returns', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
                                 <th>Return ID</th>
                                 <th>Sale ID</th>
-                                <th><?php echo Language::get('customer', $lang); ?></th>
+                                <th><?php echo Language::getText('customer', $lang); ?></th>
                                 <th>Refund Amount</th>
                                 <th>Reason</th>
                                 <th>Processed By</th>
-                                <th><?php echo Language::get('date', $lang); ?></th>
+                                <th><?php echo Language::getText('date', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>

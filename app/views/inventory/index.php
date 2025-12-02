@@ -26,8 +26,11 @@ if (isset($_GET['success'])) {
         case 'product_added':
             $message = 'Product added successfully!';
             break;
-        case 'stock_adjusted':
-            $message = 'Stock adjusted successfully!';
+        case 'product_deleted':
+            $message = 'Product deleted successfully!';
+            break;
+        case 'order_received':
+            $message = 'Purchase order received and inventory updated successfully!';
             break;
     }
 }
@@ -52,27 +55,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
     }
 }
 
-// Handle stock adjustment
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adjust_stock'])) {
-    $product_id = $_POST['product_id'];
-    $quantity_changed = $_POST['quantity_changed'];
-    $adjustment_type = $_POST['adjustment_type'];
-    $reason = $_POST['reason'];
+// Handle receiving purchase order
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['receive_order'])) {
+    $order_id = $_POST['order_id'];
     
-    // Insert stock adjustment record
-    $stmt = $conn->prepare("INSERT INTO stock_adjustments (product_id, user_id, quantity_changed, adjustment_type, reason) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("iiiis", $product_id, $user['user_id'], $quantity_changed, $adjustment_type, $reason);
+    // Get order items
+    $order_items = $conn->query("SELECT * FROM purchase_order_items WHERE order_id = $order_id");
+    
+    while ($item = $order_items->fetch_assoc()) {
+        $product_name = $item['product_name'];
+        $quantity = $item['quantity'];
+        $cost_price = $item['unit_price'];
+        
+        // Check if product exists
+        $stmt = $conn->prepare("SELECT product_id FROM products WHERE product_name = ?");
+        $stmt->bind_param("s", $product_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            // Update existing product
+            $product = $result->fetch_assoc();
+            $stmt = $conn->prepare("UPDATE products SET stock_quantity = stock_quantity + ?, cost_price = ? WHERE product_id = ?");
+            $stmt->bind_param("idi", $quantity, $cost_price, $product['product_id']);
+            $stmt->execute();
+        } else {
+            // Add new product with default selling price (cost + 30% markup)
+            $selling_price = $cost_price * 1.3;
+            $stmt = $conn->prepare("INSERT INTO products (product_name, cost_price, selling_price, stock_quantity) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("sddi", $product_name, $cost_price, $selling_price, $quantity);
+            $stmt->execute();
+        }
+    }
+    
+    // Mark order as received
+    $conn->query("UPDATE purchase_orders SET status = 'Received', received_date = NOW() WHERE order_id = $order_id");
+    
+    header('Location: index.php?lang=' . $lang . '&success=order_received');
+    exit;
+}
+
+// Handle product deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
+    $product_id = $_POST['product_id'];
+    
+    // Delete the product
+    $stmt = $conn->prepare("DELETE FROM products WHERE product_id = ?");
+    $stmt->bind_param("i", $product_id);
     
     if ($stmt->execute()) {
-        // Update product stock
-        $stmt = $conn->prepare("UPDATE products SET stock_quantity = stock_quantity + ? WHERE product_id = ?");
-        $stmt->bind_param("ii", $quantity_changed, $product_id);
-        $stmt->execute();
-        
-        header('Location: index.php?lang=' . $lang . '&success=stock_adjusted');
+        header('Location: index.php?lang=' . $lang . '&success=product_deleted');
         exit;
     } else {
-        $message = 'Failed to adjust stock.';
+        $message = 'Failed to delete product.';
     }
 }
 
@@ -114,7 +149,7 @@ $recent_adjustments = $conn->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('inventory_management', $lang); ?> - SmartSHOP</title>
+    <title><?php echo Language::getText('inventory_management', $lang); ?> - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -147,7 +182,7 @@ $recent_adjustments = $conn->query("
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>📦 <?php echo Language::get('inventory_management', $lang); ?></h1>
+            <h1>📦 <?php echo Language::getText('inventory_management', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
@@ -156,8 +191,8 @@ $recent_adjustments = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -170,10 +205,25 @@ $recent_adjustments = $conn->query("
                 </div>
             <?php endif; ?>
 
+            <?php if ($user['role'] === 'Owner'): ?>
+            <div class="receive-orders-section">
+                <h2>🚚 Receive Purchase Orders</h2>
+                <p>Process incoming deliveries from suppliers and update inventory</p>
+                <div class="receive-actions">
+                    <a href="receive.php?lang=<?php echo $lang; ?>" class="btn btn-success">
+                        <i class="fas fa-truck"></i> Receive Delivery
+                    </a>
+                    <a href="../suppliers/index.php?lang=<?php echo $lang; ?>" class="btn btn-info">
+                        <i class="fas fa-list"></i> Manage Suppliers
+                    </a>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <div class="inventory-controls">
                 <div class="search-filter">
                     <button onclick="openAddProductModal()" class="btn btn-primary">Add New Product</button>
-                    <input type="text" id="search" placeholder="<?php echo Language::get('search_products', $lang); ?>" class="form-input">
+                    <input type="text" id="search" placeholder="<?php echo Language::getText('search_products', $lang); ?>" class="form-input">
                     <select id="category-filter" class="form-input">
                         <option value="">All Categories</option>
                         <?php while ($category = $categories->fetch_assoc()): ?>
@@ -189,13 +239,13 @@ $recent_adjustments = $conn->query("
                 <table>
                     <thead>
                         <tr>
-                            <th><?php echo Language::get('product', $lang); ?></th>
+                            <th><?php echo Language::getText('product', $lang); ?></th>
                             <th>Category</th>
                             <th>Stock</th>
                             <th>Cost Price</th>
                             <th>Selling Price</th>
-                            <th><?php echo Language::get('status', $lang); ?></th>
-                            <th><?php echo Language::get('actions', $lang); ?></th>
+                            <th><?php echo Language::getText('status', $lang); ?></th>
+                            <th><?php echo Language::getText('actions', $lang); ?></th>
                         </tr>
                     </thead>
                     <tbody id="inventory-tbody">
@@ -224,8 +274,8 @@ $recent_adjustments = $conn->query("
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <button onclick="openAdjustModal(<?php echo $product['product_id']; ?>, '<?php echo addslashes($product['product_name']); ?>')" class="btn-small btn-adjust">Adjust</button>
-                                    <button onclick="openEditModal(<?php echo $product['product_id']; ?>)" class="btn-small btn-edit"><?php echo Language::get('edit', $lang); ?></button>
+                                    <button onclick="deleteProduct(<?php echo $product['product_id']; ?>, '<?php echo addslashes($product['product_name']); ?>')" class="btn-small btn-delete"><?php echo Language::getText('delete', $lang); ?></button>
+                                    <button onclick="openEditModal(<?php echo $product['product_id']; ?>)" class="btn-small btn-edit"><?php echo Language::getText('edit', $lang); ?></button>
                                     <button onclick="viewHistory(<?php echo $product['product_id']; ?>)" class="btn-small btn-history">History</button>
                                 </td>
                             </tr>
@@ -258,12 +308,12 @@ $recent_adjustments = $conn->query("
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('product', $lang); ?></th>
+                                <th><?php echo Language::getText('product', $lang); ?></th>
                                 <th>Quantity</th>
                                 <th>Type</th>
                                 <th>Reason</th>
                                 <th>User</th>
-                                <th><?php echo Language::get('date', $lang); ?></th>
+                                <th><?php echo Language::getText('date', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -380,6 +430,105 @@ $recent_adjustments = $conn->query("
             left: auto !important;
             z-index: 1000 !important;
         }
+        
+        .receive-orders-section {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .receive-orders-section h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .receive-orders-section p {
+            margin: 0 0 1.5rem 0;
+            opacity: 0.9;
+        }
+        
+        .receive-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-success {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-success:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-info {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .pending-orders {
+            margin-top: 1rem;
+        }
+        
+        .order-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .order-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+        
+        .order-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
     .inventory-controls {
         background: white;
         padding: 1.5rem;
@@ -513,7 +662,7 @@ $recent_adjustments = $conn->query("
         border-color: var(--primary);
     }
     
-    .btn-adjust { background: var(--accent); }
+    .btn-delete { background: #dc3545; }
     .btn-edit { background: #28a745; }
     .btn-history { background: #6c757d; }
     .btn-reorder { background: #fd7e14; }
@@ -598,14 +747,14 @@ $recent_adjustments = $conn->query("
             window.location.href = '?lang=' + lang;
         }
         
-        function openAdjustModal(productId, productName) {
-            document.getElementById('adjust-product-id').value = productId;
-            document.getElementById('adjust-product-name').textContent = productName;
-            document.getElementById('adjust-modal').style.display = 'block';
-        }
-        
-        function closeAdjustModal() {
-            document.getElementById('adjust-modal').style.display = 'none';
+        function deleteProduct(productId, productName) {
+            if (confirm('Are you sure you want to delete "' + productName + '"? This action cannot be undone.')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = '<input type="hidden" name="product_id" value="' + productId + '"><input type="hidden" name="delete_product" value="1">';
+                document.body.appendChild(form);
+                form.submit();
+            }
         }
         
         function openEditModal(productId) {
@@ -670,6 +819,10 @@ $recent_adjustments = $conn->query("
         
         function closeAddProductModal() {
             document.getElementById('add-product-modal').style.display = 'none';
+        }
+        
+        function viewOrderDetails(orderId) {
+            window.open('../suppliers/orders.php?view=' + orderId + '&lang=<?php echo $lang; ?>', '_blank', 'width=800,height=600');
         }
         
         // Search functionality

@@ -107,8 +107,8 @@ $payment_methods = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -116,24 +116,24 @@ $payment_methods = $conn->query("
 
         <div class="content">
             <div class="date-selector">
-                <label><?php echo Language::get('select_date', $lang); ?>:</label>
+                <label><?php echo Language::getText('select_date', $lang); ?>:</label>
                 <input type="date" value="<?php echo $selected_date; ?>" onchange="changeDate(this.value)" class="form-input">
             </div>
 
             <?php if ($shift_info): ?>
                 <div class="shift-info">
-                    <h2><?php echo Language::get('shift_information', $lang); ?></h2>
+                    <h2><?php echo Language::getText('shift_information', $lang); ?></h2>
                     <div class="shift-details">
                         <div class="shift-card">
-                            <h3><?php echo Language::get('shift_type', $lang); ?></h3>
+                            <h3><?php echo Language::getText('shift_type', $lang); ?></h3>
                             <p><?php echo ucfirst($shift_info['shift_type']); ?></p>
                         </div>
                         <div class="shift-card">
-                            <h3><?php echo Language::get('scheduled_time', $lang); ?></h3>
+                            <h3><?php echo Language::getText('scheduled_time', $lang); ?></h3>
                             <p><?php echo date('H:i', strtotime($shift_info['start_time'])); ?> - <?php echo date('H:i', strtotime($shift_info['end_time'])); ?></p>
                         </div>
                         <div class="shift-card">
-                            <h3><?php echo Language::get('status', $lang); ?></h3>
+                            <h3><?php echo Language::getText('status', $lang); ?></h3>
                             <p><?php echo ucfirst($shift_info['status']); ?></p>
                         </div>
                     </div>
@@ -142,28 +142,28 @@ $payment_methods = $conn->query("
 
             <div class="summary-cards">
                 <div class="summary-card">
-                    <h3><?php echo Language::get('total_transactions', $lang); ?></h3>
+                    <h3><?php echo Language::getText('total_transactions', $lang); ?></h3>
                     <p class="big-number"><?php echo $sales_summary['total_transactions'] ?? 0; ?></p>
                 </div>
                 <div class="summary-card">
-                    <h3><?php echo Language::get('total_sales', $lang); ?></h3>
+                    <h3><?php echo Language::getText('total_sales', $lang); ?></h3>
                     <p class="big-number"><?php echo number_format($sales_summary['total_sales'] ?? 0); ?> RWF</p>
                 </div>
                 <div class="summary-card">
-                    <h3><?php echo Language::get('average_transaction', $lang); ?></h3>
+                    <h3><?php echo Language::getText('average_transaction', $lang); ?></h3>
                     <p class="big-number"><?php echo number_format($sales_summary['avg_transaction'] ?? 0); ?> RWF</p>
                 </div>
             </div>
 
             <div class="reports-grid">
                 <div class="report-section">
-                    <h2><?php echo Language::get('hourly_performance', $lang); ?></h2>
+                    <h2><?php echo Language::getText('hourly_performance', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('hour', $lang); ?></th>
-                                <th><?php echo Language::get('transactions', $lang); ?></th>
-                                <th><?php echo Language::get('sales_amount', $lang); ?></th>
+                                <th><?php echo Language::getText('hour', $lang); ?></th>
+                                <th><?php echo Language::getText('transactions', $lang); ?></th>
+                                <th><?php echo Language::getText('sales_amount', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,13 +179,13 @@ $payment_methods = $conn->query("
                 </div>
 
                 <div class="report-section">
-                    <h2><?php echo Language::get('payment_methods', $lang); ?></h2>
+                    <h2><?php echo Language::getText('payment_methods', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('method', $lang); ?></th>
-                                <th><?php echo Language::get('count', $lang); ?></th>
-                                <th><?php echo Language::get('amount', $lang); ?></th>
+                                <th><?php echo Language::getText('method', $lang); ?></th>
+                                <th><?php echo Language::getText('count', $lang); ?></th>
+                                <th><?php echo Language::getText('amount', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>

@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('forgot_password', $lang); ?> - SmartShop POS</title>
+    <title><?php echo Language::getText('forgot_password', $lang); ?> - SmartShop POS</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <form method="POST" class="auth-form">
                         <div class="form-group">
-                            <label class="form-label"><i class="fas fa-envelope"></i> <?php echo Language::get('email', $lang); ?></label>
+                            <label class="form-label"><i class="fas fa-envelope"></i> <?php echo Language::getText('email', $lang); ?></label>
                             <input type="email" name="email" class="form-input" placeholder="Enter your registered email" required>
                         </div>
 

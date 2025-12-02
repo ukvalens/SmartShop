@@ -87,7 +87,7 @@ $recent_orders = $conn->query("
     <div class="dashboard-container">
         <nav class="top-nav">
             <div class="nav-links">
-                <a href="../dashboard/index.php?lang=<?php echo $lang; ?>"><?php echo Language::get('dashboard', $lang); ?></a>
+                <a href="../dashboard/index.php?lang=<?php echo $lang; ?>"><?php echo Language::getText('dashboard', $lang); ?></a>
                 <a href="../pos/index.php?lang=<?php echo $lang; ?>">POS</a>
                 <a href="../inventory/index.php?lang=<?php echo $lang; ?>">Inventory</a>
                 <a href="../reports/index.php?lang=<?php echo $lang; ?>">Reports</a>
@@ -105,8 +105,8 @@ $recent_orders = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -176,9 +176,9 @@ $recent_orders = $conn->query("
                             <tr>
                                 <th>Order ID</th>
                                 <th>Supplier</th>
-                                <th><?php echo Language::get('date', $lang); ?></th>
+                                <th><?php echo Language::getText('date', $lang); ?></th>
                                 <th>Total Amount</th>
-                                <th><?php echo Language::get('status', $lang); ?></th>
+                                <th><?php echo Language::getText('status', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>

@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('profile', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('profile', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -84,17 +84,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>👤 <?php echo Language::get('profile', $lang); ?></h1>
+            <h1>👤 <?php echo Language::getText('profile', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($user['role']), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../dashboard/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('dashboard', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../dashboard/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('dashboard', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
             <?php endif; ?>
             
             <div class="profile-section">
-                <h2>👤 <?php echo Language::get('profile_information', $lang); ?></h2>
+                <h2>👤 <?php echo Language::getText('profile_information', $lang); ?></h2>
                 
                 <div class="profile-form">
                     <div class="profile-image-section">
@@ -118,66 +118,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
                         
                         <form method="POST" enctype="multipart/form-data" class="image-upload-form">
                             <input type="file" name="profile_image" accept="image/*" class="form-input" required>
-                            <button type="submit" class="btn">📷 <?php echo Language::get('update_image', $lang); ?></button>
+                            <button type="submit" class="btn">📷 <?php echo Language::getText('update_image', $lang); ?></button>
                         </form>
                     </div>
                     
                     <div class="profile-details">
                         <div class="detail-item">
-                            <label><?php echo Language::get('full_name', $lang); ?>:</label>
+                            <label><?php echo Language::getText('full_name', $lang); ?>:</label>
                             <span><?php echo htmlspecialchars($user['full_name']); ?></span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('email', $lang); ?>:</label>
+                            <label><?php echo Language::getText('email', $lang); ?>:</label>
                             <span><?php echo htmlspecialchars($user['email']); ?></span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('role', $lang); ?>:</label>
+                            <label><?php echo Language::getText('role', $lang); ?>:</label>
                             <span class="role-badge"><?php echo $user['role']; ?></span>
                         </div>
                         <?php if ($user['role'] === 'Owner'): ?>
                         <div class="detail-item">
-                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <label><?php echo Language::getText('access_level', $lang); ?>:</label>
                             <span>Business Management - Full Access</span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <label><?php echo Language::getText('permissions', $lang); ?>:</label>
                             <span>Inventory, POS, Customers, Reports, Suppliers</span>
                         </div>
                         <?php elseif ($user['role'] === 'Admin'): ?>
                         <div class="detail-item">
-                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <label><?php echo Language::getText('access_level', $lang); ?>:</label>
                             <span>Business Administration - Extended Access</span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <label><?php echo Language::getText('permissions', $lang); ?>:</label>
                             <span>POS, Inventory, Customers, Reports, User Management</span>
                         </div>
                         <?php elseif ($user['role'] === 'System Admin'): ?>
                         <div class="detail-item">
-                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <label><?php echo Language::getText('access_level', $lang); ?>:</label>
                             <span>System Administration - Full Control</span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <label><?php echo Language::getText('permissions', $lang); ?>:</label>
                             <span>All System Functions, User Management, Security, Backup</span>
                         </div>
                         <?php elseif ($user['role'] === 'Cashier'): ?>
                         <div class="detail-item">
-                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <label><?php echo Language::getText('access_level', $lang); ?>:</label>
                             <span>Sales Operations - Limited Access</span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <label><?php echo Language::getText('permissions', $lang); ?>:</label>
                             <span>POS, Customer Lookup, Stock Check, Returns</span>
                         </div>
                         <?php elseif ($user['role'] === 'Customer'): ?>
                         <div class="detail-item">
-                            <label><?php echo Language::get('access_level', $lang); ?>:</label>
+                            <label><?php echo Language::getText('access_level', $lang); ?>:</label>
                             <span>Personal Account - View Only</span>
                         </div>
                         <div class="detail-item">
-                            <label><?php echo Language::get('permissions', $lang); ?>:</label>
+                            <label><?php echo Language::getText('permissions', $lang); ?>:</label>
                             <span>Order History, Loyalty Points, Credit Balance</span>
                         </div>
                         <?php endif; ?>

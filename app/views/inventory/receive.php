@@ -4,107 +4,68 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../../controllers/AuthController.php';
 require_once __DIR__ . '/../../helpers/Language.php';
+require_once __DIR__ . '/../../helpers/Navigation.php';
 require_once __DIR__ . '/../../../config/database.php';
 
 $auth = new AuthController();
-if (!$auth->isLoggedIn()) {
+if (!$auth->isLoggedIn() || $auth->getCurrentUser()['role'] !== 'Owner') {
     header('Location: ../auth/login.php');
     exit;
 }
 
 $user = $auth->getCurrentUser();
-$lang = $_GET['lang'] ?? $_SESSION['language'] ?? 'en';
+$lang = $_GET['lang'] ?? 'en';
 $db = new Database();
 $conn = $db->getConnection();
-
 $message = '';
 
-// Handle receiving items
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $order_id = $_POST['order_id'];
-    $received_quantities = $_POST['received_quantities'];
+// Handle delivery receipt
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['receive_delivery'])) {
+    $supplier_id = $_POST['supplier_id'];
+    $delivery_date = $_POST['delivery_date'];
+    $notes = $_POST['notes'];
     
-    foreach ($received_quantities as $detail_id => $received_qty) {
-        if ($received_qty > 0) {
-            // Update purchase order details
-            $stmt = $conn->prepare("UPDATE purchase_order_details SET received_quantity = ? WHERE purchase_order_detail_id = ?");
-            $stmt->bind_param("ii", $received_qty, $detail_id);
-            $stmt->execute();
+    // Process each product in the delivery
+    foreach ($_POST['products'] as $product_data) {
+        if (!empty($product_data['product_name']) && $product_data['quantity'] > 0) {
+            $product_name = $product_data['product_name'];
+            $quantity = $product_data['quantity'];
+            $cost_price = $product_data['cost_price'];
+            $selling_price = $product_data['selling_price'];
             
-            // Update product stock
-            $stmt = $conn->prepare("
-                UPDATE products p 
-                JOIN purchase_order_details pod ON p.product_id = pod.product_id 
-                SET p.stock_quantity = p.stock_quantity + ? 
-                WHERE pod.purchase_order_detail_id = ?
-            ");
-            $stmt->bind_param("ii", $received_qty, $detail_id);
+            // Check if product exists
+            $stmt = $conn->prepare("SELECT product_id FROM products WHERE product_name = ?");
+            $stmt->bind_param("s", $product_name);
             $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                // Update existing product
+                $product = $result->fetch_assoc();
+                $stmt = $conn->prepare("UPDATE products SET stock_quantity = stock_quantity + ?, cost_price = ?, selling_price = ? WHERE product_id = ?");
+                $stmt->bind_param("iddi", $quantity, $cost_price, $selling_price, $product['product_id']);
+                $stmt->execute();
+            } else {
+                // Add new product
+                $stmt = $conn->prepare("INSERT INTO products (product_name, cost_price, selling_price, stock_quantity) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("sddi", $product_name, $cost_price, $selling_price, $quantity);
+                $stmt->execute();
+            }
         }
     }
     
-    // Check if order is fully received
-    $stmt = $conn->prepare("
-        SELECT COUNT(*) as total, 
-               SUM(CASE WHEN received_quantity >= quantity_ordered THEN 1 ELSE 0 END) as received
-        FROM purchase_order_details 
-        WHERE purchase_order_id = ?
-    ");
-    $stmt->bind_param("i", $order_id);
-    $stmt->execute();
-    $result = $stmt->get_result()->fetch_assoc();
-    
-    if ($result['total'] == $result['received']) {
-        $stmt = $conn->prepare("UPDATE purchase_orders SET status = 'Delivered' WHERE purchase_order_id = ?");
-        $stmt->bind_param("i", $order_id);
-        $stmt->execute();
-    }
-    
-    $message = 'Items received and stock updated successfully!';
+    $message = 'Delivery received and inventory updated successfully!';
 }
 
-// Get pending orders
-$pending_orders = $conn->query("
-    SELECT po.*, s.supplier_name 
-    FROM purchase_orders po 
-    JOIN suppliers s ON po.supplier_id = s.supplier_id 
-    WHERE po.status = '<?php echo Language::get('pending', $lang); ?>' 
-    ORDER BY po.order_date DESC
-");
-
-// Get order details if order selected
-$order_details = null;
-$selected_order = null;
-if (isset($_GET['order_id'])) {
-    $order_id = $_GET['order_id'];
-    
-    $stmt = $conn->prepare("
-        SELECT po.*, s.supplier_name 
-        FROM purchase_orders po 
-        JOIN suppliers s ON po.supplier_id = s.supplier_id 
-        WHERE po.purchase_order_id = ?
-    ");
-    $stmt->bind_param("i", $order_id);
-    $stmt->execute();
-    $selected_order = $stmt->get_result()->fetch_assoc();
-    
-    $stmt = $conn->prepare("
-        SELECT pod.*, p.product_name, p.stock_quantity 
-        FROM purchase_order_details pod 
-        JOIN products p ON pod.product_id = p.product_id 
-        WHERE pod.purchase_order_id = ?
-    ");
-    $stmt->bind_param("i", $order_id);
-    $stmt->execute();
-    $order_details = $stmt->get_result();
-}
+// Get suppliers for dropdown
+$suppliers = $conn->query("SELECT * FROM suppliers ORDER BY supplier_name");
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receive Inventory - SmartSHOP</title>
+    <title>Receive Delivery - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
 </head>
@@ -117,28 +78,16 @@ if (isset($_GET['order_id'])) {
     </div>
 
     <div class="dashboard-container">
-        <nav class="top-nav">
-            <div class="nav-links">
-                <a href="../dashboard/index.php?lang=<?php echo $lang; ?>"><?php echo Language::get('dashboard', $lang); ?></a>
-                <a href="../pos/index.php?lang=<?php echo $lang; ?>">POS</a>
-                <a href="../inventory/index.php?lang=<?php echo $lang; ?>">Inventory</a>
-                <a href="../reports/index.php?lang=<?php echo $lang; ?>">Reports</a>
-                <a href="../customers/index.php?lang=<?php echo $lang; ?>">Customers</a>
-            </div>
-        </nav>
+        <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>📥 Receive Inventory</h1>
+            <h1>🚚 Receive Delivery</h1>
             <div class="user-info">
                 <div class="user-profile">
-                    <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
+                    <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
                         <span class="user-role"><?php echo $user['role']; ?></span>
-                    </div>
-                    <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -149,71 +98,57 @@ if (isset($_GET['order_id'])) {
                 <div class="alert alert-success"><?php echo $message; ?></div>
             <?php endif; ?>
 
-            <div class="pending-orders">
-                <h2><?php echo Language::get('pending', $lang); ?> Purchase Orders</h2>
-                <div class="orders-grid">
-                    <?php while ($order = $pending_orders->fetch_assoc()): ?>
-                        <div class="order-card">
-                            <h3>Order #<?php echo $order['purchase_order_id']; ?></h3>
-                            <p><strong>Supplier:</strong> <?php echo $order['supplier_name']; ?></p>
-                            <p><strong>Date:</strong> <?php echo date('M d, Y', strtotime($order['order_date'])); ?></p>
-                            <p><strong>Total:</strong> <?php echo number_format($order['total_amount']); ?> RWF</p>
-                            <a href="?order_id=<?php echo $order['purchase_order_id']; ?>&lang=<?php echo $lang; ?>" class="btn">Receive Items</a>
-                        </div>
-                    <?php endwhile; ?>
-                </div>
-            </div>
-
-            <?php if ($selected_order && $order_details): ?>
-                <div class="receive-section">
-                    <h2>Receive Items - Order #<?php echo $selected_order['purchase_order_id']; ?></h2>
-                    <p><strong>Supplier:</strong> <?php echo $selected_order['supplier_name']; ?></p>
-                    
-                    <form method="POST">
-                        <input type="hidden" name="order_id" value="<?php echo $selected_order['purchase_order_id']; ?>">
-                        
-                        <div class="items-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th><?php echo Language::get('product', $lang); ?></th>
-                                        <th>Ordered</th>
-                                        <th>Previously Received</th>
-                                        <th>Current Stock</th>
-                                        <th>Receive Now</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($item = $order_details->fetch_assoc()): ?>
-                                        <tr>
-                                            <td><?php echo $item['product_name']; ?></td>
-                                            <td><?php echo $item['quantity_ordered']; ?></td>
-                                            <td><?php echo $item['received_quantity']; ?></td>
-                                            <td><?php echo $item['stock_quantity']; ?></td>
-                                            <td>
-                                                <input type="number" 
-                                                       name="received_quantities[<?php echo $item['purchase_order_detail_id']; ?>]" 
-                                                       min="0" 
-                                                       max="<?php echo $item['quantity_ordered'] - $item['received_quantity']; ?>"
-                                                       value="<?php echo $item['quantity_ordered'] - $item['received_quantity']; ?>"
-                                                       class="form-input">
-                                            </td>
-                                        </tr>
+            <div class="receive-form">
+                <form method="POST">
+                    <div class="delivery-info">
+                        <h3>Delivery Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Supplier</label>
+                                <select name="supplier_id" class="form-input" onchange="loadSupplierOrders(this.value)" required>
+                                    <option value="">Select Supplier</option>
+                                    <?php while ($supplier = $suppliers->fetch_assoc()): ?>
+                                        <option value="<?php echo $supplier['supplier_id']; ?>"><?php echo $supplier['supplier_name']; ?></option>
                                     <?php endwhile; ?>
-                                </tbody>
-                            </table>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Delivery Date</label>
+                                <input type="date" name="delivery_date" class="form-input" value="<?php echo date('Y-m-d'); ?>" required>
+                            </div>
                         </div>
-                        
-                        <div class="form-actions">
-                            <button type="submit" class="btn">Update Stock</button>
-                            <a href="receive.php?lang=<?php echo $lang; ?>" class="btn btn-secondary">Back to Orders</a>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea name="notes" class="form-input" rows="2" placeholder="Delivery notes..."></textarea>
                         </div>
-                    </form>
-                </div>
-            <?php endif; ?>
+                    </div>
+
+                    <div class="products-section">
+                        <h3>Products Received</h3>
+                        <div id="products-container">
+                            <div class="product-row">
+                                <input type="text" name="products[0][product_name]" placeholder="Product Name (e.g., Sugar 1kg)" class="form-input" required>
+                                <input type="number" name="products[0][quantity]" placeholder="Quantity" class="form-input" min="1" required>
+                                <input type="number" name="products[0][cost_price]" placeholder="Cost Price" class="form-input" step="0.01" required>
+                                <input type="number" name="products[0][selling_price]" placeholder="Selling Price" class="form-input" step="0.01" required>
+                                <button type="button" onclick="removeProduct(this)" class="btn-remove">Remove</button>
+                            </div>
+                        </div>
+                        <div id="ordered-products" style="display: none;">
+                            <h4>Ordered Products from Supplier:</h4>
+                            <div id="ordered-products-list"></div>
+                        </div>
+                        <button type="button" onclick="addProduct()" class="btn btn-secondary">Add Another Product</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <input type="hidden" name="order_id" id="order-id-input">
+                        <button type="submit" name="receive_delivery" class="btn btn-primary">Receive Delivery</button>
+                        <a href="index.php?lang=<?php echo $lang; ?>" class="btn btn-secondary">Back to Inventory</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        
-        <?php include __DIR__ . '/../../includes/footer.php'; ?>
     </div>
 
     <style>
@@ -221,99 +156,214 @@ if (isset($_GET['order_id'])) {
             position: fixed !important;
             top: 20px !important;
             right: 20px !important;
-            left: auto !important;
             z-index: 1000 !important;
         }
-    .pending-orders {
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-    
-    .orders-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1rem;
-    }
-    
-    .order-card {
-        background: var(--background);
-        padding: 1.5rem;
-        border-radius: 8px;
-        border-left: 4px solid var(--accent);
-    }
-    
-    .order-card h3 {
-        color: var(--primary);
-        margin-bottom: 1rem;
-    }
-    
-    .order-card p {
-        margin-bottom: 0.5rem;
-    }
-    
-    .order-card .btn {
-        margin-top: 1rem;
-        width: 100%;
-    }
-    
-    .receive-section {
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .items-table {
-        margin: 2rem 0;
-        overflow-x: auto;
-    }
-    
-    .items-table table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .items-table th,
-    .items-table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .items-table th {
-        background: var(--background);
-        font-weight: 600;
-    }
-    
-    .items-table input {
-        width: 80px;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    
-    .form-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-    
-    .btn-secondary {
-        background: var(--secondary);
-    }
-    
-    .btn-secondary:hover {
-        background: #34495e;
-    }
+        
+        .receive-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .delivery-info, .products-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .product-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-use:hover {
+            background: #218838;
+        }
+        
+        .btn-remove:hover {
+            background: #c82333;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        #ordered-products {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        .ordered-product {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .order-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .btn-use {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .order-products {
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .order-product-item {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
     </style>
 
     <script>
         function changeLanguage(lang) {
             window.location.href = '?lang=' + lang;
+        }
+        
+        let productIndex = 1;
+        
+        function addProduct() {
+            const container = document.getElementById('products-container');
+            const productRow = document.createElement('div');
+            productRow.className = 'product-row';
+            productRow.innerHTML = `
+                <input type="text" name="products[${productIndex}][product_name]" placeholder="Product Name" class="form-input" required>
+                <input type="number" name="products[${productIndex}][quantity]" placeholder="Quantity" class="form-input" min="1" required>
+                <input type="number" name="products[${productIndex}][cost_price]" placeholder="Cost Price" class="form-input" step="0.01" required>
+                <input type="number" name="products[${productIndex}][selling_price]" placeholder="Selling Price" class="form-input" step="0.01" required>
+                <button type="button" onclick="removeProduct(this)" class="btn-remove">Remove</button>
+            `;
+            container.appendChild(productRow);
+            productIndex++;
+        }
+        
+        function removeProduct(button) {
+            button.parentElement.remove();
+        }
+        
+        function loadSupplierOrders(supplierId) {
+            if (!supplierId) {
+                document.getElementById('ordered-products').style.display = 'none';
+                return;
+            }
+            
+            fetch(`get_supplier_orders.php?supplier_id=${supplierId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        displayOrderedProducts(data);
+                    } else {
+                        document.getElementById('ordered-products').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading supplier orders:', error);
+                });
+        }
+        
+        function displayOrderedProducts(orders) {
+            const container = document.getElementById('ordered-products-list');
+            container.innerHTML = '';
+            
+            orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'ordered-product';
+                orderDiv.innerHTML = `
+                    <div class="order-info">
+                        <strong>Order #${order.purchase_order_id}</strong> - ${order.order_date}
+                        <button type="button" onclick="useOrderedProducts(${order.purchase_order_id})" class="btn-use">Use These Products</button>
+                    </div>
+                    <div class="order-products">
+                        ${order.products.map(product => `
+                            <div class="order-product-item">
+                                ${product.product_name} - Qty: ${product.quantity_ordered} - Cost: ${product.cost_price}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(orderDiv);
+            });
+            
+            document.getElementById('ordered-products').style.display = 'block';
+        }
+        
+        function useOrderedProducts(orderId) {
+            fetch(`get_order_details.php?order_id=${orderId}`)
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('products-container');
+                    container.innerHTML = '';
+                    
+                    products.forEach((product, index) => {
+                        const productRow = document.createElement('div');
+                        productRow.className = 'product-row';
+                        productRow.innerHTML = `
+                            <input type="text" name="products[${index}][product_name]" value="${product.product_name}" class="form-input" required>
+                            <input type="number" name="products[${index}][quantity]" value="${product.quantity_ordered}" class="form-input" min="1" required>
+                            <input type="number" name="products[${index}][cost_price]" value="${product.cost_price}" class="form-input" step="0.01" required>
+                            <input type="number" name="products[${index}][selling_price]" placeholder="Selling Price" class="form-input" step="0.01" required>
+                            <button type="button" onclick="removeProduct(this)" class="btn-remove">Remove</button>
+                        `;
+                        container.appendChild(productRow);
+                    });
+                    
+                    // Set the order ID to mark it as delivered when received
+                    document.getElementById('order-id-input').value = orderId;
+                    productIndex = products.length;
+                })
+                .catch(error => {
+                    console.error('Error loading order details:', error);
+                });
         }
     </script>
 </body>

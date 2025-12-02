@@ -90,7 +90,7 @@ $daily_trends = $conn->query("
     <div class="dashboard-container">
         <nav class="top-nav">
             <div class="nav-links">
-                <a href="../dashboard/index.php"><?php echo Language::get('dashboard', $lang); ?></a>
+                <a href="../dashboard/index.php"><?php echo Language::getText('dashboard', $lang); ?></a>
                 <a href="../pos/index.php">POS</a>
                 <a href="../inventory/index.php">Inventory</a>
                 <a href="../reports/daily.php">Reports</a>
@@ -108,8 +108,8 @@ $daily_trends = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -132,10 +132,10 @@ $daily_trends = $conn->query("
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('product', $lang); ?></th>
+                                <th><?php echo Language::getText('product', $lang); ?></th>
                                 <th>Stock</th>
                                 <th>Sold</th>
-                                <th><?php echo Language::get('total_profit', $lang); ?></th>
+                                <th><?php echo Language::getText('total_profit', $lang); ?></th>
                                 <th>Profit/Unit</th>
                                 <th>Action</th>
                             </tr>
@@ -169,11 +169,11 @@ $daily_trends = $conn->query("
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('product', $lang); ?></th>
+                                <th><?php echo Language::getText('product', $lang); ?></th>
                                 <th>Current Stock</th>
                                 <th>Reorder Level</th>
                                 <th>Recently Sold</th>
-                                <th><?php echo Language::get('days_left', $lang); ?></th>
+                                <th><?php echo Language::getText('days_left', $lang); ?></th>
                                 <th>Priority</th>
                             </tr>
                         </thead>
@@ -205,12 +205,12 @@ $daily_trends = $conn->query("
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('customer', $lang); ?></th>
+                                <th><?php echo Language::getText('customer', $lang); ?></th>
                                 <th>Visits</th>
                                 <th>Total Spent</th>
                                 <th>Avg/Visit</th>
                                 <th>Last Visit</th>
-                                <th><?php echo Language::get('status', $lang); ?></th>
+                                <th><?php echo Language::getText('status', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -229,7 +229,7 @@ $daily_trends = $conn->query("
                                         $spent = $customer['total_spent'] ?? 0;
                                         if ($spent > 50000) echo '<span class="vip">VIP</span>';
                                         elseif ($spent > 20000) echo '<span class="regular">Regular</span>';
-                                        else echo '<span class="new"><?php echo Language::get('new', $lang); ?></span>';
+                                        else echo '<span class="new"><?php echo Language::getText('new', $lang); ?></span>';
                                         ?>
                                     </td>
                                 </tr>
@@ -244,9 +244,9 @@ $daily_trends = $conn->query("
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('date', $lang); ?></th>
-                                <th><?php echo Language::get('transactions', $lang); ?></th>
-                                <th><?php echo Language::get('revenue', $lang); ?></th>
+                                <th><?php echo Language::getText('date', $lang); ?></th>
+                                <th><?php echo Language::getText('transactions', $lang); ?></th>
+                                <th><?php echo Language::getText('revenue', $lang); ?></th>
                                 <th>Avg/Transaction</th>
                             </tr>
                         </thead>

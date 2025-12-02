@@ -80,7 +80,7 @@ $sales_history = $conn->query("
         <table>
             <thead>
                 <tr>
-                    <th><?php echo Language::get('date', $lang); ?></th>
+                    <th><?php echo Language::getText('date', $lang); ?></th>
                     <th>Quantity Change</th>
                     <th>Type</th>
                     <th>Reason</th>
@@ -108,8 +108,8 @@ $sales_history = $conn->query("
         <table>
             <thead>
                 <tr>
-                    <th><?php echo Language::get('date', $lang); ?></th>
-                    <th><?php echo Language::get('quantity_sold', $lang); ?></th>
+                    <th><?php echo Language::getText('date', $lang); ?></th>
+                    <th><?php echo Language::getText('quantity_sold', $lang); ?></th>
                     <th>Unit Price</th>
                     <th>Subtotal</th>
                     <th>Cashier</th>

@@ -73,7 +73,7 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('point_of_sale', $lang); ?> - SmartSHOP</title>
+    <title><?php echo Language::getText('point_of_sale', $lang); ?> - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -106,7 +106,7 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>🏪 <?php echo Language::get('point_of_sale', $lang); ?></h1>
+            <h1>🏪 <?php echo Language::getText('point_of_sale', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
@@ -115,8 +115,8 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -131,9 +131,9 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
 
             <div class="pos-layout">
                 <div class="products-section">
-                    <h2><?php echo Language::get('products', $lang); ?></h2>
+                    <h2><?php echo Language::getText('products', $lang); ?></h2>
                     <div class="product-search">
-                        <input type="text" id="search" placeholder="<?php echo Language::get('search_products', $lang); ?>" class="form-input">
+                        <input type="text" id="search" placeholder="<?php echo Language::getText('search_products', $lang); ?>" class="form-input">
                     </div>
                     <div class="products-grid" id="products-grid">
                         <?php while ($product = $products->fetch_assoc()): ?>
@@ -142,28 +142,28 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                                 <p class="category"><?php echo $product['category_name']; ?></p>
                                 <p class="price"><?php echo number_format($product['selling_price']); ?> RWF</p>
                                 <p class="stock">Stock: <?php echo $product['stock_quantity']; ?></p>
-                                <button onclick="addToCart(<?php echo $product['product_id']; ?>, '<?php echo $product['product_name']; ?>', <?php echo $product['selling_price']; ?>, <?php echo $product['stock_quantity']; ?>)" class="btn-add-cart"><?php echo Language::get('add_to_cart', $lang); ?></button>
+                                <button onclick="addToCart(<?php echo $product['product_id']; ?>, '<?php echo $product['product_name']; ?>', <?php echo $product['selling_price']; ?>, <?php echo $product['stock_quantity']; ?>)" class="btn-add-cart"><?php echo Language::getText('add_to_cart', $lang); ?></button>
                             </div>
                         <?php endwhile; ?>
                     </div>
                 </div>
 
                 <div class="cart-section">
-                    <h2><?php echo Language::get('shopping_cart', $lang); ?></h2>
+                    <h2><?php echo Language::getText('shopping_cart', $lang); ?></h2>
                     <div class="cart-items" id="cart-items">
-                        <p class="empty-cart"><?php echo Language::get('cart_empty', $lang); ?></p>
+                        <p class="empty-cart"><?php echo Language::getText('cart_empty', $lang); ?></p>
                     </div>
                     
                     <div class="cart-total">
-                        <h3><?php echo Language::get('total', $lang); ?>: <span id="cart-total">0</span> RWF</h3>
+                        <h3><?php echo Language::getText('total', $lang); ?>: <span id="cart-total">0</span> RWF</h3>
                     </div>
 
                     <div class="checkout-form">
                         <form method="POST" id="checkout-form">
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('customer_optional', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('customer_optional', $lang); ?></label>
                                 <select name="customer_id" class="form-input">
-                                    <option value=""><?php echo Language::get('walk_in_customer', $lang); ?></option>
+                                    <option value=""><?php echo Language::getText('walk_in_customer', $lang); ?></option>
                                     <?php while ($customer = $customers->fetch_assoc()): ?>
                                         <option value="<?php echo $customer['customer_id']; ?>">
                                             <?php echo $customer['full_name']; ?> - <?php echo $customer['phone_number']; ?>
@@ -173,10 +173,10 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('payment_method', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('payment_method', $lang); ?></label>
                                 <select name="payment_method" class="form-input" required>
-                                    <option value="Cash"><?php echo Language::get('cash', $lang); ?></option>
-                                    <option value="Mobile Money"><?php echo Language::get('mobile_money', $lang); ?></option>
+                                    <option value="Cash"><?php echo Language::getText('cash', $lang); ?></option>
+                                    <option value="Mobile Money"><?php echo Language::getText('mobile_money', $lang); ?></option>
                                     <option value="Credit">Credit</option>
                                 </select>
                             </div>
@@ -185,8 +185,8 @@ $customers = $conn->query("SELECT * FROM customers ORDER BY full_name");
                             <input type="hidden" name="total_amount" id="total-amount-input">
                             <input type="hidden" name="complete_sale" value="1">
 
-                            <button type="submit" class="btn btn-complete" id="complete-sale-btn" disabled><?php echo Language::get('complete_sale', $lang); ?></button>
-                            <button type="button" onclick="clearCart()" class="btn btn-clear"><?php echo Language::get('clear_cart', $lang); ?></button>
+                            <button type="submit" class="btn btn-complete" id="complete-sale-btn" disabled><?php echo Language::getText('complete_sale', $lang); ?></button>
+                            <button type="button" onclick="clearCart()" class="btn btn-clear"><?php echo Language::getText('clear_cart', $lang); ?></button>
                         </form>
                     </div>
                 </div>

@@ -131,8 +131,8 @@ $hourly_sales = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -140,35 +140,35 @@ $hourly_sales = $conn->query("
 
         <div class="content">
             <div class="date-selector">
-                <label><?php echo Language::get('report_type', $lang); ?>:</label>
+                <label><?php echo Language::getText('report_type', $lang); ?>:</label>
                 <select id="report-type" class="form-input" onchange="changeReportType()">
-                    <option value="daily"><?php echo Language::get('daily_report', $lang); ?></option>
-                    <option value="customer"><?php echo Language::get('customer_report', $lang); ?></option>
+                    <option value="daily"><?php echo Language::getText('daily_report', $lang); ?></option>
+                    <option value="customer"><?php echo Language::getText('customer_report', $lang); ?></option>
                 </select>
-                <label><?php echo Language::get('date', $lang); ?>:</label>
+                <label><?php echo Language::getText('date', $lang); ?>:</label>
                 <input type="date" value="<?php echo $selected_date; ?>" onchange="changeDate(this.value)" class="form-input">
                 <select id="customer-filter" class="form-input" style="display:none;">
-                    <option value=""><?php echo Language::get('all_customers', $lang); ?></option>
+                    <option value=""><?php echo Language::getText('all_customers', $lang); ?></option>
                     <?php 
                     $customers_list = $conn->query("SELECT customer_id, full_name FROM customers ORDER BY full_name");
                     while ($cust = $customers_list->fetch_assoc()): ?>
                         <option value="<?php echo $cust['customer_id']; ?>"><?php echo $cust['full_name']; ?></option>
                     <?php endwhile; ?>
                 </select>
-                <button onclick="generatePrintReport()" class="btn"><?php echo Language::get('generate_print_report', $lang); ?></button>
+                <button onclick="generatePrintReport()" class="btn"><?php echo Language::getText('generate_print_report', $lang); ?></button>
             </div>
 
             <div class="summary-cards">
                 <div class="summary-card">
-                    <h3><?php echo Language::get('total_sales', $lang); ?></h3>
+                    <h3><?php echo Language::getText('total_sales', $lang); ?></h3>
                     <p class="big-number"><?php echo $sales_summary['total_sales'] ?? 0; ?></p>
                 </div>
                 <div class="summary-card">
-                    <h3><?php echo Language::get('total_revenue', $lang); ?></h3>
+                    <h3><?php echo Language::getText('total_revenue', $lang); ?></h3>
                     <p class="big-number"><?php echo number_format($sales_summary['total_revenue'] ?? 0); ?> RWF</p>
                 </div>
                 <div class="summary-card">
-                    <h3><?php echo Language::get('total_profit', $lang); ?></h3>
+                    <h3><?php echo Language::getText('total_profit', $lang); ?></h3>
                     <p class="big-number profit"><?php echo number_format($sales_summary['total_profit'] ?? 0); ?> RWF</p>
                 </div>
                 <div class="summary-card credit-card">
@@ -187,13 +187,13 @@ $hourly_sales = $conn->query("
 
             <div class="reports-grid">
                 <div class="report-section">
-                    <h2><?php echo Language::get('top_selling_products', $lang); ?></h2>
+                    <h2><?php echo Language::getText('top_selling_products', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('product', $lang); ?></th>
-                                <th><?php echo Language::get('quantity_sold', $lang); ?></th>
-                                <th><?php echo Language::get('revenue', $lang); ?></th>
+                                <th><?php echo Language::getText('product', $lang); ?></th>
+                                <th><?php echo Language::getText('quantity_sold', $lang); ?></th>
+                                <th><?php echo Language::getText('revenue', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -209,13 +209,13 @@ $hourly_sales = $conn->query("
                 </div>
 
                 <div class="report-section">
-                    <h2><?php echo Language::get('payment_methods', $lang); ?></h2>
+                    <h2><?php echo Language::getText('payment_methods', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('method', $lang); ?></th>
-                                <th><?php echo Language::get('transactions', $lang); ?></th>
-                                <th><?php echo Language::get('amount', $lang); ?></th>
+                                <th><?php echo Language::getText('method', $lang); ?></th>
+                                <th><?php echo Language::getText('transactions', $lang); ?></th>
+                                <th><?php echo Language::getText('amount', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,13 +231,13 @@ $hourly_sales = $conn->query("
                 </div>
 
                 <div class="report-section">
-                    <h2><?php echo Language::get('hourly_sales', $lang); ?></h2>
+                    <h2><?php echo Language::getText('hourly_sales', $lang); ?></h2>
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('hour', $lang); ?></th>
-                                <th><?php echo Language::get('sales_count', $lang); ?></th>
-                                <th><?php echo Language::get('revenue', $lang); ?></th>
+                                <th><?php echo Language::getText('hour', $lang); ?></th>
+                                <th><?php echo Language::getText('sales_count', $lang); ?></th>
+                                <th><?php echo Language::getText('revenue', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>

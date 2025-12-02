@@ -202,8 +202,8 @@ $credits = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -217,8 +217,8 @@ $credits = $conn->query("
             <?php endif; ?>
 
             <div class="credit-actions">
-                <button onclick="openAddModal()" class="btn"><?php echo Language::get('add_credit', $lang); ?></button>
-                <a href="?send_reminders=1" class="btn btn-warning" onclick="return confirm('Send reminder emails to customers with due payments?')"><?php echo Language::get('send_reminders', $lang); ?></a>
+                <button onclick="openAddModal()" class="btn"><?php echo Language::getText('add_credit', $lang); ?></button>
+                <a href="?send_reminders=1" class="btn btn-warning" onclick="return confirm('Send reminder emails to customers with due payments?')"><?php echo Language::getText('send_reminders', $lang); ?></a>
             </div>
 
             <div class="credit-sections">
@@ -280,17 +280,17 @@ $credits = $conn->query("
             </div>
 
             <div class="credits-table">
-                <h2><?php echo Language::get('credit_records', $lang); ?></h2>
+                <h2><?php echo Language::getText('credit_records', $lang); ?></h2>
                 <table>
                     <thead>
                         <tr>
-                            <th><?php echo Language::get('customer', $lang); ?></th>
-                            <th><?php echo Language::get('amount', $lang); ?></th>
-                            <th><?php echo Language::get('due_date', $lang); ?></th>
-                            <th><?php echo Language::get('days_left', $lang); ?></th>
-                            <th><?php echo Language::get('description', $lang); ?></th>
-                            <th><?php echo Language::get('status', $lang); ?></th>
-                            <th><?php echo Language::get('actions', $lang); ?></th>
+                            <th><?php echo Language::getText('customer', $lang); ?></th>
+                            <th><?php echo Language::getText('amount', $lang); ?></th>
+                            <th><?php echo Language::getText('due_date', $lang); ?></th>
+                            <th><?php echo Language::getText('days_left', $lang); ?></th>
+                            <th><?php echo Language::getText('description', $lang); ?></th>
+                            <th><?php echo Language::getText('status', $lang); ?></th>
+                            <th><?php echo Language::getText('actions', $lang); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -321,9 +321,9 @@ $credits = $conn->query("
                                 </td>
                                 <td>
                                     <?php if ($credit['email']): ?>
-                                        <button onclick="sendReminder(<?php echo $credit['credit_id']; ?>)" class="btn-small"><?php echo Language::get('remind', $lang); ?></button>
+                                        <button onclick="sendReminder(<?php echo $credit['credit_id']; ?>)" class="btn-small"><?php echo Language::getText('remind', $lang); ?></button>
                                     <?php endif; ?>
-                                    <button onclick="markPaid(<?php echo $credit['credit_id']; ?>)" class="btn-small btn-success"><?php echo Language::get('mark_paid', $lang); ?></button>
+                                    <button onclick="markPaid(<?php echo $credit['credit_id']; ?>)" class="btn-small btn-success"><?php echo Language::getText('mark_paid', $lang); ?></button>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -356,19 +356,19 @@ $credits = $conn->query("
     <div id="add-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2><?php echo Language::get('add_credit', $lang); ?></h2>
+            <h2><?php echo Language::getText('add_credit', $lang); ?></h2>
             <form method="POST">
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('customer', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('customer', $lang); ?></label>
                     <select name="customer_id" id="customer-select" class="form-input" onchange="loadCustomerItems()" required>
-                        <option value=""><?php echo Language::get('select_customer', $lang); ?></option>
+                        <option value=""><?php echo Language::getText('select_customer', $lang); ?></option>
                         <?php while ($customer = $customers->fetch_assoc()): ?>
                             <option value="<?php echo $customer['customer_id']; ?>"><?php echo $customer['full_name']; ?></option>
                         <?php endwhile; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('items_taken', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('items_taken', $lang); ?></label>
                     <textarea name="items" id="items-field" class="form-input" rows="3" placeholder="Select customer to load recent purchases" required></textarea>
                     <small>Recent purchases will be loaded automatically</small>
                 </div>
@@ -377,14 +377,14 @@ $credits = $conn->query("
                     <input type="number" name="amount" class="form-input" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('due_date', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('due_date', $lang); ?></label>
                     <input type="date" name="due_date" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('additional_notes', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('additional_notes', $lang); ?></label>
                     <textarea name="notes" class="form-input" rows="2" placeholder="Optional additional information"></textarea>
                 </div>
-                <button type="submit" name="add_credit" class="btn"><?php echo Language::get('add_credit', $lang); ?></button>
+                <button type="submit" name="add_credit" class="btn"><?php echo Language::getText('add_credit', $lang); ?></button>
             </form>
         </div>
     </div>

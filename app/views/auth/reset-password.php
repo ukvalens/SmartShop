@@ -34,7 +34,7 @@ if (!$token) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('reset_password', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('reset_password', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/auth.css">
 </head>
 <body>
@@ -47,8 +47,8 @@ if (!$token) {
 
     <div class="auth-container">
         <div class="logo">
-            <h1><?php echo Language::get('smartshop', $lang); ?></h1>
-            <p><?php echo Language::get('reset_password', $lang); ?></p>
+            <h1><?php echo Language::getText('smartshop', $lang); ?></h1>
+            <p><?php echo Language::getText('reset_password', $lang); ?></p>
         </div>
 
         <?php if ($message): ?>
@@ -59,20 +59,20 @@ if (!$token) {
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
             
             <div class="form-group">
-                <label><?php echo Language::get('new_password', $lang); ?></label>
+                <label><?php echo Language::getText('new_password', $lang); ?></label>
                 <input type="password" name="new_password" required>
             </div>
             
             <div class="form-group">
-                <label><?php echo Language::get('confirm_password', $lang); ?></label>
+                <label><?php echo Language::getText('confirm_password', $lang); ?></label>
                 <input type="password" name="confirm_password" required>
             </div>
 
-            <button type="submit" class="btn"><?php echo Language::get('update_password', $lang); ?></button>
+            <button type="submit" class="btn"><?php echo Language::getText('update_password', $lang); ?></button>
         </form>
 
         <div class="auth-links">
-            <a href="login.php?lang=<?php echo $lang; ?>"><?php echo Language::get('back_to_login', $lang); ?></a>
+            <a href="login.php?lang=<?php echo $lang; ?>"><?php echo Language::getText('back_to_login', $lang); ?></a>
         </div>
     </div>
 

@@ -68,7 +68,7 @@ $schedules = $conn->query("
     <div class="dashboard-container">
         <nav class="top-nav">
             <div class="nav-links">
-                <a href="../dashboard/index.php"><?php echo Language::get('dashboard', $lang); ?></a>
+                <a href="../dashboard/index.php"><?php echo Language::getText('dashboard', $lang); ?></a>
                 <a href="../pos/index.php">POS</a>
                 <a href="../inventory/index.php">Inventory</a>
                 <a href="../reports/daily.php">Reports</a>
@@ -86,8 +86,8 @@ $schedules = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -109,12 +109,12 @@ $schedules = $conn->query("
                 <table>
                     <thead>
                         <tr>
-                            <th><?php echo Language::get('date', $lang); ?></th>
+                            <th><?php echo Language::getText('date', $lang); ?></th>
                             <th>Staff Member</th>
-                            <th><?php echo Language::get('shift_type', $lang); ?></th>
+                            <th><?php echo Language::getText('shift_type', $lang); ?></th>
                             <th>Start Time</th>
                             <th>End Time</th>
-                            <th><?php echo Language::get('status', $lang); ?></th>
+                            <th><?php echo Language::getText('status', $lang); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -129,8 +129,8 @@ $schedules = $conn->query("
                                     <?php 
                                     $today = date('Y-m-d');
                                     $shift_date = $schedule['shift_date'];
-                                    if ($shift_date < $today) echo '<span class="status-completed"><?php echo Language::get('completed', $lang); ?></span>';
-                                    elseif ($shift_date == $today) echo '<span class="status-active"><?php echo Language::get('active', $lang); ?></span>';
+                                    if ($shift_date < $today) echo '<span class="status-completed"><?php echo Language::getText('completed', $lang); ?></span>';
+                                    elseif ($shift_date == $today) echo '<span class="status-active"><?php echo Language::getText('active', $lang); ?></span>';
                                     else echo '<span class="status-scheduled">Scheduled</span>';
                                     ?>
                                 </td>
@@ -160,11 +160,11 @@ $schedules = $conn->query("
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('date', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('date', $lang); ?></label>
                     <input type="date" name="shift_date" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('shift_type', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('shift_type', $lang); ?></label>
                     <select name="shift_type" class="form-input" required>
                         <option value="morning">Morning Shift</option>
                         <option value="afternoon">Afternoon Shift</option>

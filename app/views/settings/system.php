@@ -49,7 +49,7 @@ $settings = file_exists($settings_file) ? json_decode(file_get_contents($setting
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('system_settings', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('system_settings', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -82,17 +82,17 @@ $settings = file_exists($settings_file) ? json_decode(file_get_contents($setting
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>⚙️ <?php echo Language::get('system_settings', $lang); ?></h1>
+            <h1>⚙️ <?php echo Language::getText('system_settings', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($user['role']), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -107,32 +107,32 @@ $settings = file_exists($settings_file) ? json_decode(file_get_contents($setting
 
             <div class="settings-sections">
                 <div class="settings-section">
-                    <h2>🏪 <?php echo Language::get('shop_information', $lang); ?></h2>
+                    <h2>🏪 <?php echo Language::getText('shop_information', $lang); ?></h2>
                     <form method="POST" class="settings-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('shop_name', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('shop_name', $lang); ?></label>
                                 <input type="text" name="shop_name" value="<?php echo htmlspecialchars($settings['shop_name']); ?>" class="form-input" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('phone_number', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('phone_number', $lang); ?></label>
                                 <input type="text" name="shop_phone" value="<?php echo htmlspecialchars($settings['shop_phone']); ?>" class="form-input" required>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label"><?php echo Language::get('address', $lang); ?></label>
+                            <label class="form-label"><?php echo Language::getText('address', $lang); ?></label>
                             <textarea name="shop_address" class="form-input" rows="3" required><?php echo htmlspecialchars($settings['shop_address']); ?></textarea>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label"><?php echo Language::get('email', $lang); ?></label>
+                            <label class="form-label"><?php echo Language::getText('email', $lang); ?></label>
                             <input type="email" name="shop_email" value="<?php echo htmlspecialchars($settings['shop_email']); ?>" class="form-input" required>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('currency', $lang); ?></label>
+                                <label class="form-label"><?php echo Language::getText('currency', $lang); ?></label>
                                 <select name="currency" class="form-input" required>
                                     <option value="RWF" <?php echo $settings['currency'] === 'RWF' ? 'selected' : ''; ?>>Rwandan Franc (RWF)</option>
                                     <option value="USD" <?php echo $settings['currency'] === 'USD' ? 'selected' : ''; ?>>US Dollar (USD)</option>
@@ -140,12 +140,12 @@ $settings = file_exists($settings_file) ? json_decode(file_get_contents($setting
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><?php echo Language::get('tax_rate', $lang); ?> (%)</label>
+                                <label class="form-label"><?php echo Language::getText('tax_rate', $lang); ?> (%)</label>
                                 <input type="number" name="tax_rate" value="<?php echo $settings['tax_rate']; ?>" class="form-input" step="0.01" min="0" max="100" required>
                             </div>
                         </div>
                         
-                        <button type="submit" class="btn"><?php echo Language::get('update_settings', $lang); ?></button>
+                        <button type="submit" class="btn"><?php echo Language::getText('update_settings', $lang); ?></button>
                     </form>
                 </div>
             </div>

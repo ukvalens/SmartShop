@@ -1,5 +1,6 @@
 <?php
 class Language {
+    private $currentLang;
     private static $translations = [
         'en' => [
             'login' => 'Login',
@@ -236,7 +237,20 @@ class Language {
             'shipped' => 'Shipped',
             'delivered' => 'Delivered',
             'returned' => 'Returned',
-            'refunded' => 'Refunded'
+            'refunded' => 'Refunded',
+            'modern_pos_system' => 'Modern Point of Sale System',
+            'pos_description' => 'Streamline your retail operations with our comprehensive POS solution.',
+            'fast_sales' => 'Fast Sales',
+            'multi_user' => 'Multi-user',
+            'create_account' => 'Create Account',
+            'join_smartshop' => 'Join SmartShop and start managing your business efficiently',
+            'enter_full_name' => 'Enter your full name',
+            'enter_email' => 'Enter your email',
+            'enter_phone' => 'Enter phone number',
+            'select_role' => 'Select your role',
+            'create_password' => 'Create password',
+            'already_have_account' => 'Already have an account?',
+            'sign_in_here' => 'Sign in here'
         ],
         'rw' => [
             'login' => 'Kwinjira',
@@ -473,24 +487,44 @@ class Language {
             'shipped' => 'Byoherejwe',
             'delivered' => 'Byagejejwe',
             'returned' => 'Byasubijwe',
-            'refunded' => 'Byishyuwe'
+            'refunded' => 'Byishyuwe',
+            'modern_pos_system' => 'Sisitemu Igezweho y\'Igurisha',
+            'pos_description' => 'Oroshya ibikorwa by\'ubucuruzi bwawe hamwe na sisitemu yacu yuzuye.',
+            'fast_sales' => 'Igurisha Ryihuse',
+            'multi_user' => 'Abakoresha Benshi',
+            'create_account' => 'Kurema Konti',
+            'join_smartshop' => 'Jya muri SmartShop utangire gucunga ubucuruzi bwawe neza',
+            'enter_full_name' => 'Andika amazina yawe yose',
+            'enter_email' => 'Andika imeyili yawe',
+            'enter_phone' => 'Andika nimero ya telefoni',
+            'select_role' => 'Hitamo uruhare rwawe',
+            'create_password' => 'Kora ijambo ryibanga',
+            'already_have_account' => 'Usanzwe ufite konti?',
+            'sign_in_here' => 'Injira hano'
         ]
     ];
     
-    public static function get($key, $lang = 'en') {
+    public function __construct($lang = 'en') {
+        $this->currentLang = $lang;
+    }
+    
+    public function get($key) {
+        $translation = self::$translations[$this->currentLang][$key] ?? null;
+        if ($translation) {
+            return $translation;
+        }
+        return ucwords(str_replace('_', ' ', $key));
+    }
+    
+    public static function getText($key, $lang = 'en') {
         $translation = self::$translations[$lang][$key] ?? null;
         if ($translation) {
             return $translation;
         }
-        // If no translation found, convert underscores to spaces and capitalize
         return ucwords(str_replace('_', ' ', $key));
     }
     
     public static function getCurrentLanguage() {
         return $_GET['lang'] ?? 'en';
-    }
-    
-    public static function setLanguage($lang) {
-        // Language set via URL parameter
     }
 }

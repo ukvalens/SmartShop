@@ -108,7 +108,7 @@ $credit_customers = $conn->query("
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('customer_management', $lang); ?> - SmartSHOP</title>
+    <title><?php echo Language::getText('customer_management', $lang); ?> - SmartSHOP</title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -141,7 +141,7 @@ $credit_customers = $conn->query("
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>👥 <?php echo Language::get('customer_management', $lang); ?></h1>
+            <h1>👥 <?php echo Language::getText('customer_management', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'">
@@ -150,8 +150,8 @@ $credit_customers = $conn->query("
                         <span class="user-role"><?php echo $user['role']; ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -165,23 +165,23 @@ $credit_customers = $conn->query("
             <?php endif; ?>
 
             <div class="customer-actions">
-                <button onclick="openAddModal()" class="btn"><?php echo Language::get('add_new_customer', $lang); ?></button>
-                <input type="text" id="search" placeholder="<?php echo Language::get('search_customers', $lang); ?>" class="form-input">
+                <button onclick="openAddModal()" class="btn"><?php echo Language::getText('add_new_customer', $lang); ?></button>
+                <input type="text" id="search" placeholder="<?php echo Language::getText('search_customers', $lang); ?>" class="form-input">
             </div>
 
             <div class="customers-table">
-                <h2><?php echo Language::get('all_customers', $lang); ?></h2>
+                <h2><?php echo Language::getText('all_customers', $lang); ?></h2>
                 <table>
                     <thead>
                         <tr>
-                            <th><?php echo Language::get('name', $lang); ?></th>
-                            <th><?php echo Language::get('phone', $lang); ?></th>
-                            <th><?php echo Language::get('email', $lang); ?></th>
+                            <th><?php echo Language::getText('name', $lang); ?></th>
+                            <th><?php echo Language::getText('phone', $lang); ?></th>
+                            <th><?php echo Language::getText('email', $lang); ?></th>
                             <th>Loyalty Points</th>
                             <th>Credit Balance</th>
                             <th>Total Purchases</th>
                             <th>Orders</th>
-                            <th><?php echo Language::get('actions', $lang); ?></th>
+                            <th><?php echo Language::getText('actions', $lang); ?></th>
                         </tr>
                     </thead>
                     <tbody id="customers-tbody">
@@ -226,7 +226,7 @@ $credit_customers = $conn->query("
                 <?php if ($total_pages > 1): ?>
                     <div class="pagination">
                         <?php if ($page > 1): ?>
-                            <a href="?page=<?php echo $page - 1; ?>&lang=<?php echo $lang; ?>" class="page-btn"><?php echo Language::get('previous', $lang); ?></a>
+                            <a href="?page=<?php echo $page - 1; ?>&lang=<?php echo $lang; ?>" class="page-btn"><?php echo Language::getText('previous', $lang); ?></a>
                         <?php endif; ?>
                         
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
@@ -234,14 +234,14 @@ $credit_customers = $conn->query("
                         <?php endfor; ?>
                         
                         <?php if ($page < $total_pages): ?>
-                            <a href="?page=<?php echo $page + 1; ?>&lang=<?php echo $lang; ?>" class="page-btn"><?php echo Language::get('next', $lang); ?></a>
+                            <a href="?page=<?php echo $page + 1; ?>&lang=<?php echo $lang; ?>" class="page-btn"><?php echo Language::getText('next', $lang); ?></a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>
 
             <div class="credit-summary">
-                <h2><?php echo Language::get('credit_management', $lang); ?></h2>
+                <h2><?php echo Language::getText('credit_management', $lang); ?></h2>
                 <div class="credit-cards">
                     <?php while ($credit_customer = $credit_customers->fetch_assoc()): ?>
                         <div class="credit-card">
@@ -262,7 +262,7 @@ $credit_customers = $conn->query("
     <div id="add-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeAddModal()">&times;</span>
-            <h2><?php echo Language::get('add_new_customer', $lang); ?></h2>
+            <h2><?php echo Language::getText('add_new_customer', $lang); ?></h2>
             <form method="POST">
                 <div class="form-group">
                     <label class="form-label">Full Name</label>
@@ -273,11 +273,11 @@ $credit_customers = $conn->query("
                     <input type="tel" name="phone_number" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('email', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('email', $lang); ?></label>
                     <input type="email" name="email" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('address', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('address', $lang); ?></label>
                     <textarea name="address" class="form-input" rows="3"></textarea>
                 </div>
                 <button type="submit" name="add_customer" class="btn">Add Customer</button>

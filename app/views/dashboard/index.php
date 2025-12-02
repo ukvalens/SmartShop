@@ -23,7 +23,7 @@ $fullName = $user['full_name'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('dashboard', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('dashboard', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -86,17 +86,17 @@ $fullName = $user['full_name'];
         <?php Navigation::renderNav($role, $lang); ?>
         
         <header class="header">
-            <h1><?php echo Language::get('smartshop', $lang); ?></h1>
+            <h1><?php echo Language::getText('smartshop', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $fullName; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($role), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($role), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -109,11 +109,11 @@ $fullName = $user['full_name'];
                     <p class="role-desc">Complete system control and user management</p>
                     <div class="menu-grid">
                         <a href="../users/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>👥 <?php echo Language::get('user_management', $lang); ?></h3>
+                            <h3>👥 <?php echo Language::getText('user_management', $lang); ?></h3>
                             <p>Create, edit, delete users and assign roles</p>
                         </a>
                         <a href="../settings/system.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>⚙️ <?php echo Language::get('system_settings', $lang); ?></h3>
+                            <h3>⚙️ <?php echo Language::getText('system_settings', $lang); ?></h3>
                             <p>Configure system parameters and preferences</p>
                         </a>
                         <a href="../reports/system.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
@@ -125,7 +125,7 @@ $fullName = $user['full_name'];
                             <p>Database backup and restore operations</p>
                         </a>
                         <a href="../security/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>🔒 <?php echo Language::get('security', $lang); ?></h3>
+                            <h3>🔒 <?php echo Language::getText('security', $lang); ?></h3>
                             <p>Access logs, security settings, permissions</p>
                         </a>
                         <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
@@ -140,15 +140,15 @@ $fullName = $user['full_name'];
                     <p class="role-desc">Business operations with administrative privileges</p>
                     <div class="menu-grid">
                         <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>💰 <?php echo Language::get('point_of_sale', $lang); ?></h3>
+                            <h3>💰 <?php echo Language::getText('point_of_sale', $lang); ?></h3>
                             <p>Process sales transactions and manage POS</p>
                         </a>
                         <a href="../inventory/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>📦 <?php echo Language::get('inventory_management', $lang); ?></h3>
+                            <h3>📦 <?php echo Language::getText('inventory_management', $lang); ?></h3>
                             <p>Manage products, stock levels, and inventory</p>
                         </a>
                         <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>👥 <?php echo Language::get('customer_management', $lang); ?></h3>
+                            <h3>👥 <?php echo Language::getText('customer_management', $lang); ?></h3>
                             <p>Manage customer accounts and relationships</p>
                         </a>
                         <a href="../customers/credit.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
@@ -160,11 +160,11 @@ $fullName = $user['full_name'];
                             <p>View sales reports and business analytics</p>
                         </a>
                         <a href="../users/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>👥 <?php echo Language::get('user_management', $lang); ?></h3>
+                            <h3>👥 <?php echo Language::getText('user_management', $lang); ?></h3>
                             <p>Manage system users and permissions</p>
                         </a>
                         <a href="../settings/system.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
-                            <h3>⚙️ <?php echo Language::get('system_settings', $lang); ?></h3>
+                            <h3>⚙️ <?php echo Language::getText('system_settings', $lang); ?></h3>
                             <p>Configure system settings and preferences</p>
                         </a>
                         <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="menu-item admin-item">
@@ -186,11 +186,11 @@ $fullName = $user['full_name'];
                                 <p>Create purchase orders for sugar, rice, soap and other products</p>
                             </a>
                             <a href="../inventory/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
-                                <h3>📦 <?php echo Language::get('inventory_management', $lang); ?></h3>
+                                <h3>📦 <?php echo Language::getText('inventory_management', $lang); ?></h3>
                                 <p>Verify delivered goods and update stock in the system</p>
                             </a>
                             <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
-                                <h3>💰 <?php echo Language::get('point_of_sale', $lang); ?></h3>
+                                <h3>💰 <?php echo Language::getText('point_of_sale', $lang); ?></h3>
                                 <p>Supervise sales transactions and customer service</p>
                             </a>
                         </div>
@@ -215,7 +215,7 @@ $fullName = $user['full_name'];
                     </div>
                     
                     <div class="workflow-section">
-                        <h3>👥 <?php echo Language::get('customer_management', $lang); ?></h3>
+                        <h3>👥 <?php echo Language::getText('customer_management', $lang); ?></h3>
                         <div class="menu-grid">
                             <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item owner-item">
                                 <h3>👥 Customer Service</h3>
@@ -229,7 +229,7 @@ $fullName = $user['full_name'];
                     </div>
                     
                     <div class="access-level">
-                        <p><strong>Access Level:</strong> Full access to all system modules — Supplier, Inventory, POS, <?php echo Language::get('customer_management', $lang); ?>, and Reporting & Analytics</p>
+                        <p><strong>Access Level:</strong> Full access to all system modules — Supplier, Inventory, POS, <?php echo Language::getText('customer_management', $lang); ?>, and Reporting & Analytics</p>
                     </div>
                 </div>
             <?php elseif ($role === 'Cashier'): ?>
@@ -238,7 +238,7 @@ $fullName = $user['full_name'];
                     <p class="role-desc">Customer service and transaction processing</p>
                     <div class="menu-grid">
                         <a href="../pos/index.php?lang=<?php echo $lang; ?>" class="menu-item main-pos">
-                            <h3>💰 <?php echo Language::get('point_of_sale', $lang); ?></h3>
+                            <h3>💰 <?php echo Language::getText('point_of_sale', $lang); ?></h3>
                             <p>Process sales, accept payments, print receipts</p>
                         </a>
                         <a href="../customers/index.php?lang=<?php echo $lang; ?>" class="menu-item cashier-item">
@@ -250,7 +250,7 @@ $fullName = $user['full_name'];
                             <p>Check product availability and prices</p>
                         </a>
                         <a href="../pos/returns.php?lang=<?php echo $lang; ?>" class="menu-item cashier-item">
-                            <h3>🔄 <?php echo Language::get('returns_exchanges', $lang); ?></h3>
+                            <h3>🔄 <?php echo Language::getText('returns_exchanges', $lang); ?></h3>
                             <p>Process returns, exchanges, refunds</p>
                         </a>
                         <a href="../shift/summary.php?lang=<?php echo $lang; ?>" class="menu-item cashier-item">
@@ -271,7 +271,11 @@ $fullName = $user['full_name'];
                     <div class="workflow-section">
                         <h3>🛍️ My Shopping Experience</h3>
                         <div class="menu-grid">
-                            <a href="../customer/orders.php?lang=<?php echo $lang; ?>" class="menu-item main-pos">
+                            <a href="../customer/products.php?lang=<?php echo $lang; ?>" class="menu-item main-pos">
+                                <h3>🛍️ Browse Products</h3>
+                                <p>View all available products, prices, and stock levels</p>
+                            </a>
+                            <a href="../customer/orders.php?lang=<?php echo $lang; ?>" class="menu-item cashier-item">
                                 <h3>📦 My Purchase History</h3>
                                 <p>View products bought (sugar, soap, etc.) and digital receipts</p>
                             </a>

@@ -110,7 +110,7 @@ if (isset($_GET['edit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo Language::get('supplier_management', $lang); ?> - <?php echo Language::get('smartshop', $lang); ?></title>
+    <title><?php echo Language::getText('supplier_management', $lang); ?> - <?php echo Language::getText('smartshop', $lang); ?></title>
     <link rel="stylesheet" href="../../../public/css/main.css">
     <link rel="stylesheet" href="../../../public/css/dashboard.css">
     <style>
@@ -143,17 +143,17 @@ if (isset($_GET['edit'])) {
         <?php Navigation::renderNav($user['role'], $lang); ?>
         
         <header class="header">
-            <h1>🚚 <?php echo Language::get('supplier_management', $lang); ?></h1>
+            <h1>🚚 <?php echo Language::getText('supplier_management', $lang); ?></h1>
             <div class="user-info">
                 <div class="user-profile">
                     <img src="../../../uploads/profiles/<?php echo $user['user_id']; ?>.jpg?v=<?php echo time(); ?>" alt="Profile" class="profile-img" onerror="this.src='../../../uploads/profiles/default.jpg'" style="object-fit: cover;">
                     <div class="user-details">
                         <span class="user-name"><?php echo $user['full_name']; ?></span>
-                        <span class="user-role"><?php echo Language::get(strtolower($user['role']), $lang); ?></span>
+                        <span class="user-role"><?php echo Language::getText(strtolower($user['role']), $lang); ?></span>
                     </div>
                     <div class="user-menu">
-                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::get('profile', $lang); ?></a>
-                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::get('logout', $lang); ?></a>
+                        <a href="../profile/index.php?lang=<?php echo $lang; ?>" class="profile-link"><?php echo Language::getText('profile', $lang); ?></a>
+                        <a href="../../controllers/logout.php" class="btn-logout"><?php echo Language::getText('logout', $lang); ?></a>
                     </div>
                 </div>
             </div>
@@ -167,23 +167,23 @@ if (isset($_GET['edit'])) {
             <?php endif; ?>
 
             <div class="supplier-actions">
-                <button onclick="openAddModal()" class="btn">➕ <?php echo Language::get('add_supplier', $lang); ?></button>
-                <a href="orders.php?lang=<?php echo $lang; ?>" class="btn btn-secondary">📋 <?php echo Language::get('purchase_orders', $lang); ?></a>
+                <button onclick="openAddModal()" class="btn">➕ <?php echo Language::getText('add_supplier', $lang); ?></button>
+                <a href="orders.php?lang=<?php echo $lang; ?>" class="btn btn-secondary">📋 <?php echo Language::getText('purchase_orders', $lang); ?></a>
             </div>
 
             <div class="suppliers-section">
-                <h2>📋 <?php echo Language::get('suppliers_list', $lang); ?></h2>
+                <h2>📋 <?php echo Language::getText('suppliers_list', $lang); ?></h2>
                 <div class="suppliers-table">
                     <table>
                         <thead>
                             <tr>
-                                <th><?php echo Language::get('supplier_name', $lang); ?></th>
-                                <th><?php echo Language::get('contact_person', $lang); ?></th>
-                                <th><?php echo Language::get('phone', $lang); ?></th>
-                                <th><?php echo Language::get('email', $lang); ?></th>
-                                <th><?php echo Language::get('total_orders', $lang); ?></th>
-                                <th><?php echo Language::get('total_spent', $lang); ?></th>
-                                <th><?php echo Language::get('actions', $lang); ?></th>
+                                <th><?php echo Language::getText('supplier_name', $lang); ?></th>
+                                <th><?php echo Language::getText('contact_person', $lang); ?></th>
+                                <th><?php echo Language::getText('phone', $lang); ?></th>
+                                <th><?php echo Language::getText('email', $lang); ?></th>
+                                <th><?php echo Language::getText('total_orders', $lang); ?></th>
+                                <th><?php echo Language::getText('total_spent', $lang); ?></th>
+                                <th><?php echo Language::getText('actions', $lang); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -199,9 +199,9 @@ if (isset($_GET['edit'])) {
                                     <td><span class="badge"><?php echo $supplier['total_orders']; ?></span></td>
                                     <td><?php echo number_format($supplier['total_spent']); ?> RWF</td>
                                     <td>
-                                        <a href="?edit=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small btn-primary">✏️ <?php echo Language::get('edit', $lang); ?></a>
-                                        <a href="?delete=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small btn-danger" onclick="return confirm('<?php echo Language::get('confirm_delete', $lang); ?>')">🗑️ <?php echo Language::get('delete', $lang); ?></a>
-                                        <a href="orders.php?supplier_id=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small">📋 <?php echo Language::get('orders', $lang); ?></a>
+                                        <a href="?edit=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small btn-primary">✏️ <?php echo Language::getText('edit', $lang); ?></a>
+                                        <a href="?delete=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small btn-danger" onclick="return confirm('<?php echo Language::getText('confirm_delete', $lang); ?>')">🗑️ <?php echo Language::getText('delete', $lang); ?></a>
+                                        <a href="orders.php?supplier_id=<?php echo $supplier['supplier_id']; ?>&lang=<?php echo $lang; ?>" class="btn-small">📋 <?php echo Language::getText('orders', $lang); ?></a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -235,7 +235,7 @@ if (isset($_GET['edit'])) {
     <div id="supplier-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2><?php echo $edit_supplier ? Language::get('edit_supplier', $lang) : Language::get('add_supplier', $lang); ?></h2>
+            <h2><?php echo $edit_supplier ? Language::getText('edit_supplier', $lang) : Language::getText('add_supplier', $lang); ?></h2>
             <form method="POST" class="supplier-form">
                 <?php if ($edit_supplier): ?>
                     <input type="hidden" name="supplier_id" value="<?php echo $edit_supplier['supplier_id']; ?>">
@@ -243,38 +243,38 @@ if (isset($_GET['edit'])) {
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label"><?php echo Language::get('supplier_name', $lang); ?></label>
+                        <label class="form-label"><?php echo Language::getText('supplier_name', $lang); ?></label>
                         <input type="text" name="supplier_name" class="form-input" value="<?php echo $edit_supplier ? htmlspecialchars($edit_supplier['supplier_name']) : ''; ?>" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label"><?php echo Language::get('contact_person', $lang); ?></label>
+                        <label class="form-label"><?php echo Language::getText('contact_person', $lang); ?></label>
                         <input type="text" name="contact_person" class="form-input" value="<?php echo $edit_supplier ? htmlspecialchars($edit_supplier['contact_person'] ?? '') : ''; ?>" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label"><?php echo Language::get('phone', $lang); ?></label>
+                        <label class="form-label"><?php echo Language::getText('phone', $lang); ?></label>
                         <input type="tel" name="phone" class="form-input" value="<?php echo $edit_supplier ? htmlspecialchars($edit_supplier['phone'] ?? '') : ''; ?>" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label"><?php echo Language::get('email', $lang); ?></label>
+                        <label class="form-label"><?php echo Language::getText('email', $lang); ?></label>
                         <input type="email" name="email" class="form-input" value="<?php echo $edit_supplier ? htmlspecialchars($edit_supplier['email']) : ''; ?>">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('address', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('address', $lang); ?></label>
                     <textarea name="address" class="form-input" rows="3" required><?php echo $edit_supplier ? htmlspecialchars($edit_supplier['address']) : ''; ?></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label"><?php echo Language::get('notes', $lang); ?></label>
+                    <label class="form-label"><?php echo Language::getText('notes', $lang); ?></label>
                     <textarea name="notes" class="form-input" rows="2"><?php echo $edit_supplier ? htmlspecialchars($edit_supplier['notes'] ?? '') : ''; ?></textarea>
                 </div>
                 
                 <button type="submit" name="<?php echo $edit_supplier ? 'update_supplier' : 'add_supplier'; ?>" class="btn">
-                    <?php echo $edit_supplier ? Language::get('update_supplier', $lang) : Language::get('add_supplier', $lang); ?>
+                    <?php echo $edit_supplier ? Language::getText('update_supplier', $lang) : Language::getText('add_supplier', $lang); ?>
                 </button>
             </form>
         </div>
